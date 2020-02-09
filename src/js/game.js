@@ -1,5 +1,6 @@
 
 ant_require("actors/stars.js");
+ant_require("actors/board.js");
 
 const GAME = {
 	stack: [],
@@ -12,6 +13,7 @@ const GAME = {
 		// start game
 		this.animationFrame = requestAnimationFrame(this.frame.bind(this));
 		this.addActor(new Stars(this));
+		this.addActor(new Board(this));
 	},
 	performance: (window.performance || {
 		then: Date.now(),

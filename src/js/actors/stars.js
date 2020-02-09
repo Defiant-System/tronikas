@@ -8,7 +8,7 @@ class Stars {
 
 		let stars = [],
 			maxDepth = 64,
-			len = 256;
+			len = 192;
 		while (len--) {
 			stars.push({
 				x: this.randomInteger(-25, 25),
@@ -20,16 +20,16 @@ class Stars {
 		this.maxDepth = 32;
 	}
 
+	destroy() {
+		
+	}
+
 	random(a, b) {
 		return Math.random() * (b - a) + a;
 	}
 
 	randomInteger(a, b) {
 		return Math.floor(this.random(a, b));
-	}
-
-	destroy() {
-		
 	}
 
 	update() {
