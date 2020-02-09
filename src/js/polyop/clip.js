@@ -1,6 +1,4 @@
 
-import { OperationType } from "./operationType.js";
-
 var Clip = {
 	DEBUG: false,
 	GPC_EPSILON: 2.2204460492503131e-016,
@@ -1011,5 +1009,3 @@ var Clip = {
 		return it_node;
 	}
 };
-
-export { Clip };

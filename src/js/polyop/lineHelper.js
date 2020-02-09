@@ -101,5 +101,3 @@ const LineHelper = {
 	    }
 	}
 };
-
-export { LineHelper };

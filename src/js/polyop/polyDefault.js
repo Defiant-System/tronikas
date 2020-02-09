@@ -1,14 +1,4 @@
 
-import {
-	Point,
-	Rectangle,
-	ArrayList,
-	ArrayHelper } from "./utils.js";
-
-import { PolySimple } from "./polySimple.js";
-import { Clip } from "./clip.js";
-
-
 class PolyDefault {
 	constructor(isHole) {
 		if (isHole == null) isHole = false;
@@ -303,5 +293,3 @@ class PolyDefault {
 		return res;
 	}
 }
-
-export { PolyDefault };

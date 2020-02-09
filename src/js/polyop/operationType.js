@@ -10,5 +10,3 @@ class OperationType {
 		this.GPC_UNION = new OperationType('Union');
 	}
 }
-
-export { OperationType };

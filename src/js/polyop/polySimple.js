@@ -1,4 +1,3 @@
- 
 /**
  * <code>PolySimple</code> is a simple polygon - contains only one inner polygon.
  * <p>
@@ -7,12 +6,6 @@
  *
  * @author  Dan Bridenbecker, Solution Engineering, Inc.
  */
- 
-import {
-	Point,
-	Rectangle,
-	ArrayList } from "./utils.js";
-
 
 class PolySimple {
 	constructor() {
@@ -312,5 +305,3 @@ class PolySimple {
 		return area;
 	}
 }
-
-export { PolySimple };
