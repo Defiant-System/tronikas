@@ -11,8 +11,8 @@ class Pi {
 		this.thickness = 3;
 		this.rotation = 0.006;
 
-		this.center = new Vector(300, 300);
-		this.direction = new Vector(2, 2);
+		this.center = new Vector(100, 100);
+		this.direction = new Vector(2, 3);
 	}
 
 	destroy() {
@@ -21,10 +21,16 @@ class Pi {
 
 	update() {
 		var available = this.GAME.board.available,
-			len,
+			circle = {
+				center: new Vector(this.center.x, this.center.y),
+				radius: this.radius
+			},
 			x0, y0, x1, y1,
-			line, collision,
-			radian, normal;
+			line,
+			collision;
+
+		// add direction to face circle
+		circle.center.add(this.direction);
 
 		for (let i=0, il=available.length; i<il; i++) {
 			x0 = available[i][0];
@@ -33,13 +39,14 @@ class Pi {
 			y1 = available[(i+1) % il][1];
 
 			line = [[x0, y0], [x1, y1]];
-			collision = Polyop.circleIntersectLine(this, line);
+			collision = Polyop.circleIntersectLine(circle, line);
 
 			if (collision) {
-				radian = Math.atan2(y1 - y0, x1 - x0);
-				normal = Vector.getNormal(radian);
+				let radian = Math.atan2(y1 - y0, x1 - x0),
+					normal = Vector.getNormal(radian);
 				Vector.reflect(normal, this.direction);
-				//this.rotation *= -1;
+				
+				this.rotation *= -1;
 			}
 		}
 
@@ -65,10 +72,11 @@ class Pi {
 
 		ctx.save();
 		ctx.translate(this.center.x, this.center.y);
+		//ctx.globalAlpha = 1;
 
-		ctx.rotate(this.angle * -1.5 * pi2);
+		ctx.rotate(this.angle * -1.25 * pi2);
 		ctx.lineWidth = this.thickness - 1;
-		ctx.shadowColor = "rgba(255,255,255,0.75)";
+		ctx.shadowColor = "rgba(255,255,255,0.5)";
 		ctx.shadowBlur = this.thickness;
 		
 		for (let i=0, il=this.thickness * 3; i<il; i++) {
