@@ -7,6 +7,7 @@ ant_require("actors/bouncer.js");
 ant_require("actors/sparkle.js");
 ant_require("actors/walker.js");
 ant_require("actors/photon.js");
+ant_require("actors/pi.js");
 
 
 const GAME = {
@@ -26,7 +27,8 @@ const GAME = {
 		this.addActor(new Board);
 		//this.addActor(new Bouncer);
 		//this.addActor(new Walker);
-		this.addActor(new Photon);
+		//this.addActor(new Photon);
+		this.addActor(new Pi);
 	},
 	performance: (window.performance || {
 		then: Date.now(),

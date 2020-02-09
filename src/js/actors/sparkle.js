@@ -1,10 +1,11 @@
 
 class Sparkle {
-	constructor(x, y, direction) {
+	constructor(x, y, direction, color) {
 		this.name = "Sparkle";
 		this.ctx = GAME.ctx;
 		this.rays = [];
 		this.ttl = 20;
+		this.rgb = color || "200,100,0";
 
 		let len = this.randomInteger(15, 30),
 			pi = Math.PI,
@@ -72,7 +73,7 @@ class Sparkle {
 		while (len--) {
 			item = this.rays[len];
 			alpha = item.ttl / (this.ttl + 5);
-			ctx.fillStyle = 'rgba(200,100,0,'+ alpha +')';
+			ctx.fillStyle = `rgba(${this.rgb},${alpha})`;
 			ctx.beginPath();
 			ctx.arc(item.pos.x, item.pos.y, item.size, 0, pi2);
 			ctx.closePath();
