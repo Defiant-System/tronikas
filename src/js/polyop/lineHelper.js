@@ -79,6 +79,22 @@ const LineHelper = {
 			];
 		}
 	},
+	circleIntersectLine: function(circle, line) {
+		let ac = {x: circle.center.x - line[0][0], y: circle.center.y - line[0][1]},
+	    	ab = {x: line[1][0] - line[0][0], y: line[1][1] - line[0][1]},
+	    	ab2 = Vector.dot(ab, ab),
+	    	acab = Vector.dot(ac, ab),
+	    	t = acab / ab2;
+	    t = (t < 0) ? 0 : t;
+	    t = (t > 1) ? 1 : t;
+
+	    let h = {
+	    	x: (ab.x * t + line[0][0]) - circle.center.x,
+	    	y: (ab.y * t + line[0][1]) - circle.center.y
+	    };
+	    
+	    return Vector.dot(h, h) <= circle.radius * circle.radius
+	}
 };
 
 export { LineHelper };

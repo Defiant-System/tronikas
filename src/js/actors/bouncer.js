@@ -6,8 +6,8 @@ class Bouncer {
 		this.ctx = GAME.ctx;
 		this.board = GAME.board;
 
-		this.size = 7;
-		this.position = new Vector(100, 100);
+		this.radius = 7;
+		this.center = new Vector(100, 100);
 		this.direction = new Vector(3, 3);
 	}
 
@@ -19,7 +19,8 @@ class Bouncer {
 		let available = this.GAME.board.available,
 			i, il,
 			x0, y0, x1, y1,
-			l1, l2, col,
+			line,
+			collision,
 			rad,
 			normal;
 
@@ -29,26 +30,22 @@ class Bouncer {
 			x1 = available[(i+1) % il][0];
 			y1 = available[(i+1) % il][1];
 
-			l2 = [[x0, y0], [x1, y1]];
-			l1 = [[this.position.x,
-					this.position.y],
-					[this.position.x + this.direction.x,
-					this.position.y + this.direction.y]];
-			col = Polyop.lineIntersect(l1, l2);
+			line = [[x0, y0], [x1, y1]];
+			collision = Polyop.circleIntersectLine(this, line);
 
-			if (col) {
+			if (collision) {
 				rad = Math.atan2(y1 - y0, x1 - x0);
 				normal = Vector.getNormal(rad);
 				Vector.reflect(normal, this.direction);
 
 				// collision sparkle
-				//spark = new this.Sparkle(col[0], col[1], rad);
+				//spark = new this.Sparkle(collision[0], collision[1], rad);
 				//this.sparks.push(spark);
-				return;
+				//return;
 			}
 		}
 		// move item
-		this.position.add(this.direction);
+		this.center.add(this.direction);
 	}
 
 	render() {
@@ -60,11 +57,11 @@ class Bouncer {
 
 		// dot gradient
 		gradient = ctx.createRadialGradient(
-			this.position.x,
-			this.position.y,
-			this.size * 2,
-			this.position.x,
-			this.position.y,
+			this.center.x,
+			this.center.y,
+			this.radius * 2,
+			this.center.x,
+			this.center.y,
 			0);
 		gradient.addColorStop(0, 'transparent');
 		gradient.addColorStop(0.7, '#fa4');
@@ -73,7 +70,7 @@ class Bouncer {
 		ctx.fillStyle = gradient;
 
 		ctx.beginPath();
-		ctx.arc(this.position.x, this.position.y, this.size, 0, pi2);
+		ctx.arc(this.center.x, this.center.y, this.radius, 0, pi2);
 		ctx.closePath();
 		ctx.fill();
 
