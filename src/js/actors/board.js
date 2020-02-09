@@ -15,6 +15,8 @@ class Board {
 					[this.margin, this.height]]
 		}];
 
+		this.available = [].concat(this.polygon[0].poly);
+
 		// temp
 		this.cover({color: 'rgba(0,180,180,1)', poly: [[460, 20], [460, 80], [490, 80], [490, 140], [300, 140], [300, 100], [402, 100], [402, 20]]});
 	}

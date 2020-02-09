@@ -1,6 +1,8 @@
 
 ant_require("game.js");	 // GAME
 
+import { Polyop } from "./polyop/index.js";
+
 const tronikas = {
 	init() {
 		// initiate game

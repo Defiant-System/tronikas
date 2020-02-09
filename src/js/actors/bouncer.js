@@ -2,6 +2,7 @@
 class Bouncer {
 	constructor(GAME) {
 		this.name = "Bouncer";
+		this.GAME = GAME;
 		this.ctx = GAME.ctx;
 		this.board = GAME.board;
 
@@ -15,7 +16,39 @@ class Bouncer {
 	}
 
 	update() {
-		
+		let available = this.GAME.board.available,
+			i, il,
+			x0, y0, x1, y1,
+			l1, l2, col,
+			rad,
+			normal;
+
+		for (i=0, il=available.length; i<il; i++) {
+			x0 = available[i][0];
+			y0 = available[i][1];
+			x1 = available[(i+1) % il][0];
+			y1 = available[(i+1) % il][1];
+
+			l2 = [[x0, y0], [x1, y1]];
+			l1 = [[this.position.x,
+					this.position.y],
+					[this.position.x + this.direction.x,
+					this.position.y + this.direction.y]];
+			col = Polyop.lineIntersect(l1, l2);
+
+			if (col) {
+				rad = Math.atan2(y1 - y0, x1 - x0);
+				normal = Vector.getNormal(rad);
+				Vector.reflect(normal, this.direction);
+
+				// collision sparkle
+				//spark = new this.Sparkle(col[0], col[1], rad);
+				//this.sparks.push(spark);
+				return;
+			}
+		}
+		// move item
+		this.position.add(this.direction);
 	}
 
 	render() {
