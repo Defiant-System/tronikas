@@ -6,7 +6,7 @@ class Bouncer {
 		this.ctx = GAME.ctx;
 		this.board = GAME.board;
 
-		this.radius = 7;
+		this.radius = 6;
 		this.center = new Vector(100, 100);
 		this.direction = new Vector(3, 3);
 	}

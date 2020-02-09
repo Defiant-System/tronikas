@@ -10,18 +10,30 @@ import {
 	ArrayList,
 	ArrayHelper } from "./utils.js";
 
+import { Clip } from "./clip.js";
+import { PolyDefault } from "./polyDefault.js";
 import { LineHelper } from "./lineHelper.js";
 
 
 const Polyop = {
 	...LineHelper,
+	Clip,
+	createSegment: function(vx) {
+		let res = new PolyDefault(),
+			il = vx.length,
+			i = 0;
+		for(; i<il; i++) {
+			res.addPoint(new Point(vx[i][0], vx[i][1]));
+		}
+		return res;
+	},
 	getArea: function(vx) {
-		let segm = createSegment(vx);
+		let segm = this.createSegment(vx);
 		return segm.getArea();
 	},
 	clip: function(operation, vx1, vx2) {
-		let segm1 = createSegment(vx1),
-			segm2 = createSegment(vx2),
+		let segm1 = this.createSegment(vx1),
+			segm2 = this.createSegment(vx2),
 			diff = segm1[operation](segm2),
 			num = diff.getNumInnerPoly(),
 			n = 0,

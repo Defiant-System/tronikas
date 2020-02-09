@@ -19,12 +19,47 @@ class Board {
 		this.available = [].concat(this.polygon[0].poly);
 
 		// temp
-		this.cover({color: 'rgba(0,180,180,1)', poly: [[460, 20], [460, 80], [490, 80], [490, 140], [300, 140], [300, 100], [402, 100], [402, 20]]});
+		this.cover({color: "rgba(0,180,180,1)", poly: [[460, 20], [460, 80], [490, 80], [490, 140], [300, 140], [300, 100], [402, 100], [402, 20]]});
 	}
 
 	cover(area) {
+		var available,
+			covered,
+			cArr = [],
+			len,
+			fullArea = this.calcArea(this.polygon[0].poly),
+			playerArea = 0;
+		
 		// add to polygons
 		this.polygon.push(area);
+
+		// calcualte available area
+		available = Polyop.clip("difference", this.available, area.poly);
+		this.available = available[0].vertices;
+	}
+
+	closePath(poly, line) {
+		
+	}
+
+	calcArea(poly) {
+		var total = 0,
+			addX,
+			addY,
+			subX,
+			subY,
+			i = 0, il = poly.length;
+
+		for (; i < il; i++) {
+			addX = poly[i][0];
+			addY = poly[i == il - 1 ? 0 : i + 1][1];
+			subX = poly[i == il - 1 ? 0 : i + 1][0];
+			subY = poly[i][1];
+			total += (addX * addY * 0.5);
+			total -= (subX * subY * 0.5);
+		}
+
+		return Math.abs(total);
 	}
 
 	update() {
@@ -41,8 +76,8 @@ class Board {
 
 		ctx.save();
 		ctx.translate(0.5, 0.5);
-		ctx.lineCap = 'round';
-		ctx.strokeStyle = 'rgba(255,255,255,1)';
+		ctx.lineCap = "round";
+		ctx.strokeStyle = "rgba(255,255,255,1)";
 		ctx.lineWidth = 1;
 
 
@@ -60,7 +95,7 @@ class Board {
 		
 		// covered
 		//ctx.globalAlpha = 1;
-		//ctx.globalCompositeOperation = 'source-over';
+		//ctx.globalCompositeOperation = "source-over";
 		ctx.lineWidth = 1.5;
 		len = polygon.length;
 		while (len--) {

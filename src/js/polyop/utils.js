@@ -138,17 +138,6 @@ const VertexType = {
 };
 
 
-const createSegment = function(vx) {
-	let res = new PolyDefault(),
-		il = vx.length,
-		i = 0;
-	for(; i<il; i++) {
-		res.addPoint(new Point(vx[i][0], vx[i][1]));
-	}
-	return res;
-};
-
-
 const getVertices = function(segment) {
 	let vertices = [],
 		il = segment.getNumPoints(),
