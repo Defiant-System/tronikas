@@ -1,11 +1,9 @@
 
-ant_require("canvas.js");	// CANVAS
-ant_require("game.js");		// GAME
+ant_require("game.js");	 // GAME
 
 const tronikas = {
 	init() {
-		// initiate objects
-		CANVAS.init();
+		// initiate game
 		GAME.init();
 	},
 	dispatch(event) {

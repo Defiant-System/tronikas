@@ -1,19 +1,27 @@
 
+ant_require("class/vector.js");
+
 ant_require("actors/stars.js");
 ant_require("actors/board.js");
+ant_require("actors/bouncer.js");
+
 
 const GAME = {
 	stack: [],
 	init() {
-		this.cvs = CANVAS.context;
-		this.ctx = CANVAS.context;
-		this.width = CANVAS.width;
-		this.height = CANVAS.height;
+		// fast references
+		this.canvas = window.find("#canvas");
+		
+		this.cvs = this.canvas[0];
+		this.ctx = this.cvs.getContext("2d");
+		this.width = this.canvas.prop("offsetWidth");
+		this.height = this.canvas.prop("offsetHeight");
 
 		// start game
 		this.animationFrame = requestAnimationFrame(this.frame.bind(this));
 		this.addActor(new Stars(this));
 		this.addActor(new Board(this));
+		this.addActor(new Bouncer(this));
 	},
 	performance: (window.performance || {
 		then: Date.now(),
@@ -25,6 +33,10 @@ const GAME = {
 		this.then = this.now;
 	},
 	addActor(item) {
+		if (item.constructor === Board) {
+			// save reference to board
+			this.board = item;
+		}
 		this.stack.push(item);
 	},
 	deleteActor(item) {
