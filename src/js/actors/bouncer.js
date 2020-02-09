@@ -1,6 +1,6 @@
 
 class Bouncer {
-	constructor(GAME) {
+	constructor() {
 		this.name = "Bouncer";
 		this.GAME = GAME;
 		this.ctx = GAME.ctx;
@@ -21,7 +21,8 @@ class Bouncer {
 			x0, y0, x1, y1,
 			line,
 			collision,
-			rad,
+			radian,
+			spark,
 			normal;
 
 		for (i=0, il=available.length; i<il; i++) {
@@ -29,19 +30,17 @@ class Bouncer {
 			y0 = available[i][1];
 			x1 = available[(i+1) % il][0];
 			y1 = available[(i+1) % il][1];
-
 			line = [[x0, y0], [x1, y1]];
 			collision = Polyop.circleIntersectLine(this, line);
 
 			if (collision) {
-				rad = Math.atan2(y1 - y0, x1 - x0);
-				normal = Vector.getNormal(rad);
+				radian = Math.atan2(y1 - y0, x1 - x0);
+				normal = Vector.getNormal(radian);
 				Vector.reflect(normal, this.direction);
 
 				// collision sparkle
-				//spark = new this.Sparkle(collision[0], collision[1], rad);
-				//this.sparks.push(spark);
-				//return;
+				spark = new Sparkle(collision.x, collision.y, radian);
+				this.GAME.addActor(spark);
 			}
 		}
 		// move item

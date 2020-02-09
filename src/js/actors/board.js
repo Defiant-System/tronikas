@@ -1,8 +1,9 @@
 
 class Board {
-	constructor(GAME) {
+	constructor() {
 		this.name = "Board";
 		this.ctx = GAME.ctx;
+		
 		this.margin = 20;
 		this.width = GAME.width - this.margin;
 		this.height = GAME.height - this.margin;

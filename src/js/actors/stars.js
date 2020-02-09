@@ -1,6 +1,6 @@
 
 class Stars {
-	constructor(GAME) {
+	constructor() {
 		this.name = "Stars";
 		this.ctx = GAME.ctx;
 		this.width = GAME.width;

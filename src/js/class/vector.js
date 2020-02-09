@@ -11,8 +11,8 @@ class Vector {
 	}
 
 	sub(vector) {
-		this.x -= v.x;
-		this.y -= v.y;
+		this.x -= vector.x;
+		this.y -= vector.y;
 	}
 
 	multiply(vector) {

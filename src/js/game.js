@@ -4,6 +4,7 @@ ant_require("class/vector.js");
 ant_require("actors/stars.js");
 ant_require("actors/board.js");
 ant_require("actors/bouncer.js");
+ant_require("actors/sparkle.js");
 
 
 const GAME = {

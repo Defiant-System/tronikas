@@ -1,6 +1,6 @@
 
 class FPS {
-	constructor(GAME) {
+	constructor() {
 		this.name = "FPS monitor";
 	}
 
