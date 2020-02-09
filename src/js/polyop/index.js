@@ -1,18 +1,18 @@
 
 ant_require("./utils.js");
 ant_require("./aetTree.js");
-ant_require("./operationType.js");
+ant_require("./bundleState.js");
 ant_require("./clip.js");
+ant_require("./edgeTable.js");
 ant_require("./itNodeTable.js");
+ant_require("./lineHelper.js");
+ant_require("./lmtTable.js");
+ant_require("./operationType.js");
 ant_require("./polygonNode.js");
 ant_require("./polySimple.js");
 ant_require("./polyDefault.js");
-ant_require("./lineHelper.js");
-ant_require("./lmtTable.js");
-ant_require("./scanBeamTree.js");
-ant_require("./edgeTable.js");
-ant_require("./bundleState.js");
 ant_require("./topPolygonNode.js");
+ant_require("./scanBeamTree.js");
 
 
 const Polyop = {

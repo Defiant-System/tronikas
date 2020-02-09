@@ -1,10 +1,12 @@
 
-ant_require("class/vector.js");
+ant_require("polyop/vector.js");
 
 ant_require("actors/stars.js");
 ant_require("actors/board.js");
 ant_require("actors/bouncer.js");
 ant_require("actors/sparkle.js");
+ant_require("actors/walker.js");
+ant_require("actors/photon.js");
 
 
 const GAME = {
@@ -20,9 +22,11 @@ const GAME = {
 
 		// start game
 		this.animationFrame = requestAnimationFrame(this.frame.bind(this));
-		this.addActor(new Stars(this));
-		this.addActor(new Board(this));
-		this.addActor(new Bouncer(this));
+		this.addActor(new Stars);
+		this.addActor(new Board);
+		//this.addActor(new Bouncer);
+		//this.addActor(new Walker);
+		this.addActor(new Photon);
 	},
 	performance: (window.performance || {
 		then: Date.now(),
@@ -61,29 +65,18 @@ const GAME = {
 		this.animationFrame = requestAnimationFrame(this.frame.bind(this));
 	},
 	update() {
-		let delta = this.DELTA,
-			stack = this.stack,
-			len = stack.length;
-		while (len--) {
-			if (stack[len] && stack[len].update) {
-				stack[len].update(delta);
-			}
-		}
+		this.stack.map(actor => {
+			actor.update(this.DELTA);
+		})
 	},
 	render() {
-		let ctx = this.ctx,
-			stack = this.stack,
-			len = stack.length;
-
 		// stop and freeze
 		if (!this.animationFrame) return;
 
-		ctx.clearRect(0, 0, this.WIDTH, this.HEIGHT);
+		this.ctx.clearRect(0, 0, this.width, this.height);
 
-		while (len--) {
-			if (stack[len].render) {
-				stack[len].render(ctx);
-			}
-		}
+		this.stack.map(actor => {
+			actor.render();
+		})
 	}
 }
