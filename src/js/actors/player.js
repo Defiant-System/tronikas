@@ -85,8 +85,10 @@ class Player {
 			let line = [[this.x, this.y], [this.x, this.y]],
 				intersection = [];
 
+			// extend imaginary line & check if path needs closing
 			switch (true) {
 				case this.UP:
+					line[1][1] = -1e4;
 					if (!this.isOnline && this.y <= this.min.y) {
 						this.y = this.min.y;
 						this.isCovering = false;
@@ -95,6 +97,7 @@ class Player {
 					}
 					break;
 				case this.RIGHT:
+					line[1][0] =  1e4;
 					if (!this.isOnline && this.x >= this.max.x) {
 						this.x = this.max.x;
 						this.isCovering = false;
@@ -103,6 +106,7 @@ class Player {
 					}
 					break;
 				case this.DOWN:
+					line[1][1] =  1e4;
 					if (!this.isOnline && this.y >= this.max.y) {
 						this.y = this.max.y;
 						this.isCovering = false;
@@ -111,6 +115,7 @@ class Player {
 					}
 					break;
 				case this.LEFT:
+					line[1][0] = -1e4;
 					if (!this.isOnline && this.x <= this.min.x) {
 						this.x = this.min.x;
 						this.isCovering = false;
@@ -120,16 +125,8 @@ class Player {
 					break;
 			}
 
-			// player is officially not on 
+			// player is officially not on line
 			this.isOnline = !this.isCovering;
-
-			// extend imaginary line
-			switch (true) {
-				case this.UP:    line[1][1] = -1e4; break;
-				case this.RIGHT: line[1][0] =  1e4; break;
-				case this.DOWN:  line[1][1] =  1e4; break;
-				case this.LEFT:  line[1][0] = -1e4; break;
-			}
 
 			available.map((start, i) => {
 				let end = available[(i+1) % len],
@@ -183,6 +180,16 @@ class Player {
 			this.max.x = Math.max.apply(null, rX);
 			this.min.y = Math.min.apply(null, rY);
 			this.max.y = Math.max.apply(null, rY);
+		}
+
+		if (this.isCovering) {
+			if (this.UP    && this.move.direction === 3 ||
+				this.RIGHT && this.move.direction === 4 ||
+				this.DOWN  && this.move.direction === 1 ||
+				this.LEFT  && this.move.direction === 2) {
+					this.slide();
+					return;
+			}
 		}
 
 		switch (true) {
@@ -327,7 +334,7 @@ class Player {
 		ctx.save();
 		ctx.translate(0.5, 0.5);
 
-		if (shape.length) {
+		if (this.isCovering) {
 			// if player is "covering"
 			ctx.lineWidth = 2;
 			ctx.strokeStyle = "rgba(255,190,255,.5)";
