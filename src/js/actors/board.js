@@ -18,9 +18,8 @@ class Board {
 		this.available = [].concat(this.polygon[0]);
 
 		// temp
-		this.cover([[460, 20], [460, 80], [530, 80], [530, 150], [260, 150], [260, 40], [402, 40], [402, 20]]);
+		//this.cover([[460, 20], [460, 80], [530, 80], [530, 150], [260, 150], [260, 40], [402, 40], [402, 20]]);
 		//this.cover([[225, 460], [20, 460], [20, 220], [310, 220], [310, 330], [225, 330]]);
-		//this.cover([[200,20],[200,84],[260,84]], [[266, 40], [260, 150]]);
 	}
 
 	cover(polygon, line) {
@@ -43,20 +42,19 @@ class Board {
 		this.available = available[0].vertices;
 	}
 
-	closePath(polygon, line) {
+	closePath(poly1, line) {
 		let available = this.available,
-			i = 0,
 			il = available.length,
-			poly1 = [].concat(polygon),
+			i = 0,
 			poly2,
 			point = [poly1[0][0], poly1[0][1]],
-			distance,
 			a, b, start, end;
 
 		available.map((point, i) => {
 			if (point[0] === line[0][0] && point[1] === line[0][1]) a = i + 1;
 		});
 
+		// iterate available vertices to close path
 		for (; i<il; i++) {
 			b = i + a;
 			start = [available[b % il][0], available[b % il][1]];
@@ -66,8 +64,10 @@ class Board {
 			if (Polyop.pointLineDistance(point, [start, end]) === 0) break;
 		}
 
+		// invert path in order to calculate smaller area
 		poly2 = Polyop.clip("difference", available, poly1)[0].vertices;
 
+		// always return smaller area
 		return this.calcArea(poly1) > this.calcArea(poly2) ? poly2 : poly1;
 	}
 
