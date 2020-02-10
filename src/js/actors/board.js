@@ -20,41 +20,70 @@ class Board {
 		// temp
 		this.cover([[460, 20], [460, 80], [530, 80], [530, 150], [260, 150], [260, 40], [402, 40], [402, 20]]);
 		//this.cover([[225, 460], [20, 460], [20, 220], [310, 220], [310, 330], [225, 330]]);
+		//this.cover([[200,20],[200,84],[260,84]], [[266, 40], [260, 150]]);
 	}
 
-	cover(area) {
-		var available,
+	cover(polygon, line) {
+		let available,
 			covered,
 			cArr = [],
 			len,
 			fullArea = this.calcArea(this.polygon[0]),
 			playerArea = 0;
 		
+		if (line) {
+			polygon = this.closePath(polygon, line);
+		}
+
 		// add to polygons
-		this.polygon.push(area);
+		this.polygon.push(polygon);
 
 		// calcualte available area
-		available = Polyop.clip("difference", this.available, area);
+		available = Polyop.clip("difference", this.available, polygon);
 		this.available = available[0].vertices;
 	}
 
-	closePath(poly, line) {
-		
+	closePath(polygon, line) {
+		let available = this.available,
+			i = 0,
+			il = available.length,
+			poly1 = [].concat(polygon),
+			poly2,
+			point = [poly1[0][0], poly1[0][1]],
+			distance,
+			a, b, start, end;
+
+		available.map((point, i) => {
+			if (point[0] === line[0][0] && point[1] === line[0][1]) a = i + 1;
+		});
+
+		for (; i<il; i++) {
+			b = i + a;
+			start = [available[b % il][0], available[b % il][1]];
+			end = [available[(b+1) % il][0], available[(b+1) % il][1]];
+			
+			poly1.push([available[(i+a) % il][0], available[(i+a) % il][1]]);
+			if (Polyop.pointLineDistance(point, [start, end]) === 0) break;
+		}
+
+		poly2 = Polyop.clip("difference", available, poly1)[0].vertices;
+
+		return this.calcArea(poly1) > this.calcArea(poly2) ? poly2 : poly1;
 	}
 
-	calcArea(poly) {
-		var total = 0,
+	calcArea(polygon) {
+		let total = 0,
 			addX,
 			addY,
 			subX,
 			subY,
-			i = 0, il = poly.length;
+			i = 0, il = polygon.length;
 
 		for (; i < il; i++) {
-			addX = poly[i][0];
-			addY = poly[i == il - 1 ? 0 : i + 1][1];
-			subX = poly[i == il - 1 ? 0 : i + 1][0];
-			subY = poly[i][1];
+			addX = polygon[i][0];
+			addY = polygon[i == il - 1 ? 0 : i + 1][1];
+			subX = polygon[i == il - 1 ? 0 : i + 1][0];
+			subY = polygon[i][1];
 			total += (addX * addY * 0.5);
 			total -= (subX * subY * 0.5);
 		}
@@ -92,7 +121,7 @@ class Board {
 		
 		// available area
 		ctx.lineWidth = 3;
-		ctx.strokeStyle = 'rgba(170,170,255,.5)';
+		ctx.strokeStyle = "rgba(170,170,255,.5)";
 		ctx.lineTo(available[0][0], available[0][1]);
 		ctx.beginPath();
 		available.map(point => ctx.lineTo(point[0], point[1]));

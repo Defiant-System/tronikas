@@ -37,17 +37,23 @@ class Player {
 	}
 
 	closePath() {
-		let polygon = [].concat(this.history),
+		let line = this.lastPolyLine,
+			polygon = [].concat(this.history),
 			point = [this.x, this.y];
 
 		// add final point
 		polygon.push(point);
 
-		console.log(polygon);
-
 		// reset player
 		this.isCovering = false;
 		this.isOnline = true;
+		this.history = [];
+
+		// delete move direction
+		delete this.move.direction;
+
+		// cover board with new polygon
+		GAME.board.cover(polygon, line);
 	}
 
 	nearestLine(point, available) {
@@ -70,7 +76,7 @@ class Player {
 
 	checkMove() {
 		let available = GAME.board.available,
-			avLen = available.length,
+			len = available.length,
 			point = [this.x, this.y],
 			pi = Math.PI,
 			direction;
@@ -126,7 +132,7 @@ class Player {
 			}
 
 			available.map((start, i) => {
-				let end = available[(i+1) % avLen],
+				let end = available[(i+1) % len],
 					polyLine = [start, end],
 					collision = Polyop.lineIntersect(line, polyLine);
 				if (collision) {
@@ -142,6 +148,8 @@ class Player {
 
 			// sort intersections
 			intersection = intersection.sort((a, b) => a.distance - b.distance);
+
+			this.lastPolyLine = [].concat(intersection[0].polyLine);
 
 			if (intersection.length) {
 				switch (true) {
@@ -180,6 +188,10 @@ class Player {
 		switch (true) {
 			case this.UP:
 				direction = 1;
+				if (this.isCovering && this.move.direction !== direction) {
+					// add point
+					this.history.push([this.x, this.y]);
+				}
 				if (!this.isCovering && this.move.speed === 0 && this.max.y === this.min.y) {
 					// test is move is "legal"
 					point[1] -= this.move.min;
@@ -193,6 +205,10 @@ class Player {
 				break;
 			case this.RIGHT:
 				direction = 2;
+				if (this.isCovering && this.move.direction !== direction) {
+					// add point
+					this.history.push([this.x, this.y]);
+				}
 				if (!this.isCovering && this.move.speed === 0 && this.max.x === this.min.x) {
 					// test is move is "legal"
 					point[0] += this.move.min;
@@ -206,6 +222,10 @@ class Player {
 				break;
 			case this.DOWN:
 				direction = 3;
+				if (this.isCovering && this.move.direction !== direction) {
+					// add point
+					this.history.push([this.x, this.y]);
+				}
 				if (!this.isCovering && this.move.speed === 0 && this.max.y === this.min.y) {
 					// test is move is "legal"
 					point[1] += this.move.min;
@@ -219,6 +239,10 @@ class Player {
 				break;
 			case this.LEFT:
 				direction = 4;
+				if (this.isCovering && this.move.direction !== direction) {
+					// add point
+					this.history.push([this.x, this.y]);
+				}
 				if (!this.isCovering && this.move.speed === 0 && this.max.x === this.min.x) {
 					// test is move is "legal"
 					point[0] -= this.move.min;
@@ -230,11 +254,6 @@ class Player {
 					this.x = Math.max(this.x - this.move.speed, this.min.x);
 				}
 				break;
-		}
-
-		if (this.isCovering && this.move.direction !== direction) {
-			// add point
-			this.history.push([this.x, this.y]);
 		}
 
 		// save movement direction
