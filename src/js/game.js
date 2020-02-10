@@ -3,6 +3,7 @@ ant_require("polyop/vector.js");
 
 ant_require("actors/stars.js");
 ant_require("actors/board.js");
+ant_require("actors/player.js");
 ant_require("actors/bouncer.js");
 ant_require("actors/sparkle.js");
 ant_require("actors/walker.js");
@@ -25,10 +26,11 @@ const GAME = {
 		this.animationFrame = requestAnimationFrame(this.frame.bind(this));
 		this.addActor(new Stars);
 		this.addActor(new Board);
-		//this.addActor(new Bouncer);
+		this.addActor(new Player);
+		this.addActor(new Bouncer);
 		//this.addActor(new Walker);
 		//this.addActor(new Photon);
-		this.addActor(new Pi);
+		//this.addActor(new Pi);
 	},
 	performance: (window.performance || {
 		then: Date.now(),
@@ -40,9 +42,10 @@ const GAME = {
 		this.then = this.now;
 	},
 	addActor(item) {
-		if (item.constructor === Board) {
-			// save reference to board
-			this.board = item;
+		// save references
+		switch (item.constructor) {
+			case Board: this.board = item; break;
+			case Player: this.player = item; break;
 		}
 		this.stack.push(item);
 	},

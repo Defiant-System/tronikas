@@ -11,13 +11,14 @@ const tronikas = {
 		switch (event.type) {
 			case "window.open":
 				break;
-			case "keystroke":
-				switch (event.char) {
-					case "up": break;
-					case "down": break;
-					case "left": break;
-					case "right": break;
-				}
+			case "window.keyup":
+				GAME.player.UP =
+				GAME.player.DOWN =
+				GAME.player.LEFT =
+				GAME.player.RIGHT = false;
+				break;
+			case "window.keystroke":
+				GAME.player[event.char.toUpperCase()] = true;
 				break;
 		}
 	}

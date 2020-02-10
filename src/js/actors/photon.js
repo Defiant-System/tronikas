@@ -41,7 +41,7 @@ class Photon {
 			line2, d0, d1,
 			x0, y0, x1, y1,
 			col = [],
-			pos, rad, normal;
+			pos;
 
 		for (let i=0, il=available.length; i<il; i++) {
 			x0 = available[i][0];
@@ -64,8 +64,8 @@ class Photon {
 		}
 
 		if (col.length === 1) {
-			let i = col[0].int;
-			normal = Vector.getNormal(col[0].rad);
+			let i = col[0].int,
+				normal = Vector.getNormal(col[0].rad);
 			Vector.reflect(normal, this.vectors[i].direction);
 			this.vectors[i].position.x = col[0].pos[0];
 			this.vectors[i].position.y = col[0].pos[1];

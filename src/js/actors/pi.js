@@ -10,6 +10,11 @@ class Pi {
 		this.radius = 37;
 		this.thickness = 3;
 		this.rotation = 0.006;
+		this.pulse = {
+				i: -0.05,
+				min: this.radius - 20,
+				max: this.radius
+			};
 
 		this.center = new Vector(100, 100);
 		this.direction = new Vector(2, 3);
@@ -29,6 +34,11 @@ class Pi {
 			line,
 			collision;
 
+		// pulsating
+		this.radius += this.pulse.i;
+		if (this.radius >= this.pulse.max) this.pulse.i *= -1;
+		if (this.radius <= this.pulse.min) this.pulse.i *= -1;
+
 		// add direction to face circle
 		circle.center.add(this.direction);
 
@@ -45,6 +55,10 @@ class Pi {
 				let radian = Math.atan2(y1 - y0, x1 - x0),
 					normal = Vector.getNormal(radian);
 				Vector.reflect(normal, this.direction);
+
+				// collision sparkle
+				let spark = new Sparkle(collision.x, collision.y, radian, "100,255,100");
+				this.GAME.addActor(spark);
 				
 				this.rotation *= -1;
 			}
@@ -74,14 +88,14 @@ class Pi {
 		ctx.translate(this.center.x, this.center.y);
 		//ctx.globalAlpha = 1;
 
-		ctx.rotate(this.angle * -1.25 * pi2);
+		ctx.rotate(this.angle * -1.5 * pi2);
 		ctx.lineWidth = this.thickness - 1;
 		ctx.shadowColor = "rgba(255,255,255,0.5)";
 		ctx.shadowBlur = this.thickness;
 		
 		for (let i=0, il=this.thickness * 3; i<il; i++) {
 			ctx.strokeStyle = `rgba(255,255,255,${ 1 - (i / il) })`;
-			pLen = (i * this.thickness) + (i*29/il);
+			pLen = (i * this.thickness) + (i * 19 / il);
 			ctx.setLineDash([pLen + this.thickness, (radius * 2) - pLen]);
 			ctx.beginPath();
 			ctx.arc(0, 0, radius, 0, pi2);
@@ -90,7 +104,7 @@ class Pi {
 
 		ctx.rotate(this.angle * 2 * pi2);
 		ctx.shadowBlur = 0;
-		ctx.lineWidth = this.thickness * 3;
+		ctx.lineWidth = this.thickness * 1.5;
 		ctx.globalCompositeOperation = 'source-atop';
 		
 		pLen = pi2 / this.colors.length;

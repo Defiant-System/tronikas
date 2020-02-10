@@ -22,7 +22,6 @@ class Bouncer {
 			line,
 			collision,
 			radian,
-			spark,
 			normal;
 
 		for (i=0, il=available.length; i<il; i++) {
@@ -39,7 +38,7 @@ class Bouncer {
 				Vector.reflect(normal, this.direction);
 
 				// collision sparkle
-				spark = new Sparkle(collision.x, collision.y, radian);
+				let spark = new Sparkle(collision.x, collision.y, radian);
 				this.GAME.addActor(spark);
 			}
 		}
