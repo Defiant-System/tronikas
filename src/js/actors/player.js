@@ -4,7 +4,7 @@ class Player {
 		this.name = "Player";
 		this.ctx = GAME.ctx;
 
-		this.x = 220;
+		this.x = 250;
 		this.y = 20;
 		this.size = 9;
 		this.ring = 0;
@@ -21,6 +21,15 @@ class Player {
 
 		// trail
 		this.trail = [];
+
+		// move history
+		this.history = {
+			dir: false,
+			polygon: []
+			//polygon: [[350,20],[350,50],[250,50],[250,170]]
+		};
+		// this.x = 250;
+		// this.y = 170;
 	}
 
 	destroy() {
@@ -57,9 +66,8 @@ class Player {
 			.map(item => {
 				if (Math.floor(item.distance) === 0) {
 					isCorner++;
-
-					let normal = (Math.atan(item.line[1][1] - item.line[0][1], item.line[1][0] - item.line[0][0]) + pi) % pi;
-					if (normal === 0) {
+					// calculate normal to check if zero
+					if ((Math.atan(item.line[1][1] - item.line[0][1], item.line[1][0] - item.line[0][0]) + pi) % pi === 0) {
 						rX.push(item.line[0][0]);
 						rX.push(item.line[1][0]);
 					} else {
@@ -77,28 +85,58 @@ class Player {
 
 		switch (true) {
 			case this.UP:
-				this.move.slide = 1;
-				this.move.speed = Math.min(this.move.speed + this.move.acc, this.move.max);
-				this.y = Math.max(this.y - this.move.speed, this.min.y);
+				if (this.move.speed === 0 && this.max.y === this.min.y) {
+					// test is move is "legal"
+					point[1] -= this.move.min;
+					this.isCovering = Polyop.isPointInPolygon(point, available);
+					this.isOnline = !this.isCovering;
+				}
+				if (this.max.y !== this.min.y) {
+					this.move.slide = 1;
+					this.move.speed = Math.min(this.move.speed + this.move.acc, this.move.max);
+					this.y = Math.max(this.y - this.move.speed, this.min.y);
+				}
 				break;
 			case this.RIGHT:
-				this.move.slide = 2;
-				this.move.speed = Math.min(this.move.speed + this.move.acc, this.move.max);
-				this.x = Math.min(this.x + this.move.speed, this.max.x);
+				if (this.move.speed === 0 && this.max.x === this.min.x) {
+					// test is move is "legal"
+					point[0] += this.move.min;
+					this.isCovering = Polyop.isPointInPolygon(point, available);
+					this.isOnline = !this.isCovering;
+				}
+				if (this.max.x !== this.min.x) {
+					this.move.slide = 2;
+					this.move.speed = Math.min(this.move.speed + this.move.acc, this.move.max);
+					this.x = Math.min(this.x + this.move.speed, this.max.x);
+				}
 				break;
 			case this.DOWN:
-				this.move.slide = 3;
-				this.move.speed = Math.min(this.move.speed + this.move.acc, this.move.max);
-				this.y = Math.min(this.y + this.move.speed, this.max.y);
+				if (this.move.speed === 0 && this.max.y === this.min.y) {
+					// test is move is "legal"
+					point[1] += this.move.min;
+					this.isCovering = Polyop.isPointInPolygon(point, available);
+					this.isOnline = !this.isCovering;
+				}
+				if (this.max.y !== this.min.y) {
+					this.move.slide = 3;
+					this.move.speed = Math.min(this.move.speed + this.move.acc, this.move.max);
+					this.y = Math.min(this.y + this.move.speed, this.max.y);
+				}
 				break;
 			case this.LEFT:
-				this.move.slide = 4;
-				this.move.speed = Math.min(this.move.speed + this.move.acc, this.move.max);
-				this.x = Math.max(this.x - this.move.speed, this.min.x);
+				if (this.move.speed === 0 && this.max.x === this.min.x) {
+					// test is move is "legal"
+					point[0] -= this.move.min;
+					this.isCovering = Polyop.isPointInPolygon(point, available);
+					this.isOnline = !this.isCovering;
+				}
+				if (this.max.x !== this.min.x) {
+					this.move.slide = 4;
+					this.move.speed = Math.min(this.move.speed + this.move.acc, this.move.max);
+					this.x = Math.max(this.x - this.move.speed, this.min.x);
+				}
 				break;
 		}
-
-		this.isMoving = true;
 	}
 
 	slide() {
@@ -106,8 +144,7 @@ class Player {
 		
 		if (this.move.speed <= this.move.min) {
 			this.move.speed = 0;
-			delete this.slide;
-			delete this.isMoving;
+			delete this.move.slide;
 		}
 		// deceleration
 		switch (this.move.slide) {
@@ -139,7 +176,7 @@ class Player {
 		if (this.UP || this.RIGHT || this.DOWN || this.LEFT) this.checkMove();
 		else if (this.move.slide) this.slide();
 
-		if (this.isMoving) {
+		if (this.move.speed > 0) {
 			this.trail.push({
 				x: this.x,
 				y: this.y,
@@ -158,15 +195,21 @@ class Player {
 	render() {
 		let ctx = this.ctx,
 			pi2 = Math.PI * 2,
+			shape = this.history.polygon,
 			gradient;
 
 		ctx.save();
+		ctx.translate(0.5, 0.5);
 
-		// dot gradient
-		gradient = ctx.createRadialGradient(this.x, this.y, this.size * 1.5, this.x, this.y, 0);
-		gradient.addColorStop(0, "transparent");
-		gradient.addColorStop(0.7, "#f8f");
-		gradient.addColorStop(1, "#fff");
+		if (shape.length) {
+			// if player is "covering"
+			ctx.lineWidth = 2;
+			ctx.strokeStyle = "rgba(255,190,255,.5)";
+			ctx.beginPath();
+			ctx.moveTo(shape[0][0], shape[0][1]);
+			shape.slice(1).map(point => ctx.lineTo(point[0], point[1]));
+			ctx.stroke();
+		}
 
 		// player trail
 		ctx.save();
@@ -182,6 +225,12 @@ class Player {
 
 		// player ring
 		ctx.lineWidth = 3;
+
+		// dot gradient
+		gradient = ctx.createRadialGradient(this.x, this.y, this.size * 1.5, this.x, this.y, 0);
+		gradient.addColorStop(0, "transparent");
+		gradient.addColorStop(0.7, "#f8f");
+		gradient.addColorStop(1, "#fff");
 
 		// player dot
 		ctx.fillStyle = gradient;

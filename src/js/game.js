@@ -27,7 +27,7 @@ const GAME = {
 		this.addActor(new Stars);
 		this.addActor(new Board);
 		this.addActor(new Player);
-		this.addActor(new Bouncer);
+		//this.addActor(new Bouncer);
 		//this.addActor(new Walker);
 		//this.addActor(new Photon);
 		//this.addActor(new Pi);
