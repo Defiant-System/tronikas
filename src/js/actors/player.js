@@ -4,7 +4,7 @@ class Player {
 		this.name = "Player";
 		this.ctx = GAME.ctx;
 
-		this.x = 250;
+		this.x = 200;
 		this.y = 20;
 		this.size = 9;
 		this.ring = 0;
@@ -23,17 +23,31 @@ class Player {
 		this.trail = [];
 
 		// move history
-		this.history = {
-			dir: false,
-			polygon: []
-			//polygon: [[350,20],[350,50],[250,50],[250,170]]
-		};
+		this.history = [];
+		this.isOnline = true;
+
+		// temp
+		// this.history = [[350,20],[350,50],[250,50],[250,170]];
 		// this.x = 250;
 		// this.y = 170;
 	}
 
 	destroy() {
 		
+	}
+
+	closePath() {
+		let polygon = [].concat(this.history),
+			point = [this.x, this.y];
+
+		// add final point
+		polygon.push(point);
+
+		console.log(polygon);
+
+		// reset player
+		this.isCovering = false;
+		this.isOnline = true;
 	}
 
 	nearestLine(point, available) {
@@ -56,40 +70,120 @@ class Player {
 
 	checkMove() {
 		let available = GAME.board.available,
-			point = [Math.floor(this.x), Math.floor(this.y)],
-			rX = [point[0]],
-			rY = [point[1]],
+			avLen = available.length,
+			point = [this.x, this.y],
 			pi = Math.PI,
-			isCorner = 0;
+			direction;
 
-		this.nearestLine(point, available)
-			.map(item => {
-				if (Math.floor(item.distance) === 0) {
-					isCorner++;
-					// calculate normal to check if zero
-					if ((Math.atan(item.line[1][1] - item.line[0][1], item.line[1][0] - item.line[0][0]) + pi) % pi === 0) {
-						rX.push(item.line[0][0]);
-						rX.push(item.line[1][0]);
-					} else {
-						rY.push(item.line[0][1]);
-						rY.push(item.line[1][1]);
+		if (this.isCovering) {
+			let line = [[this.x, this.y], [this.x, this.y]],
+				intersection = [];
+
+			switch (true) {
+				case this.UP:
+					if (!this.isOnline && this.y <= this.min.y) {
+						this.y = this.min.y;
+						this.isCovering = false;
+						this.closePath();
+						return;
+					}
+					break;
+				case this.RIGHT:
+					if (!this.isOnline && this.x >= this.max.x) {
+						this.x = this.max.x;
+						this.isCovering = false;
+						this.closePath();
+						return;
+					}
+					break;
+				case this.DOWN:
+					if (!this.isOnline && this.y >= this.max.y) {
+						this.y = this.max.y;
+						this.isCovering = false;
+						this.closePath();
+						return;
+					}
+					break;
+				case this.LEFT:
+					if (!this.isOnline && this.x <= this.min.x) {
+						this.x = this.min.x;
+						this.isCovering = false;
+						this.closePath();
+						return;
+					}
+					break;
+			}
+
+			// player is officially not on 
+			this.isOnline = !this.isCovering;
+
+			// extend imaginary line
+			switch (true) {
+				case this.UP:    line[1][1] = -1e4; break;
+				case this.RIGHT: line[1][0] =  1e4; break;
+				case this.DOWN:  line[1][1] =  1e4; break;
+				case this.LEFT:  line[1][0] = -1e4; break;
+			}
+
+			available.map((start, i) => {
+				let end = available[(i+1) % avLen],
+					polyLine = [start, end],
+					collision = Polyop.lineIntersect(line, polyLine);
+				if (collision) {
+					let a = line[0][0] - collision[0],
+						b = line[0][1] - collision[1],
+						distance = Math.sqrt(a * a + b * b);
+					
+					if (distance > 0) {
+						intersection.push({ ...collision, distance, polyLine });
 					}
 				}
 			});
 
-		// set boundries
-		this.min.x = Math.min.apply(null, rX);
-		this.max.x = Math.max.apply(null, rX);
-		this.min.y = Math.min.apply(null, rY);
-		this.max.y = Math.max.apply(null, rY);
+			// sort intersections
+			intersection = intersection.sort((a, b) => a.distance - b.distance);
+
+			if (intersection.length) {
+				switch (true) {
+					case this.UP:    this.min.y = intersection[0][1]; break;
+					case this.RIGHT: this.max.x = intersection[0][0]; break;
+					case this.DOWN:  this.max.y = intersection[0][1]; break;
+					case this.LEFT:  this.min.x = intersection[0][0]; break;
+				}
+			}
+
+		} else {
+			let rX = [point[0]],
+				rY = [point[1]];
+			// get nearest lines in available polygon
+			this.nearestLine(point, available)
+				.map(item => {
+					if (Math.floor(item.distance) === 0) {
+						// calculate normal to check if zero
+						if ((Math.atan(item.line[1][1] - item.line[0][1], item.line[1][0] - item.line[0][0]) + pi) % pi === 0) {
+							rX.push(item.line[0][0]);
+							rX.push(item.line[1][0]);
+						} else {
+							rY.push(item.line[0][1]);
+							rY.push(item.line[1][1]);
+						}
+					}
+				});
+
+			// set boundries
+			this.min.x = Math.min.apply(null, rX);
+			this.max.x = Math.max.apply(null, rX);
+			this.min.y = Math.min.apply(null, rY);
+			this.max.y = Math.max.apply(null, rY);
+		}
 
 		switch (true) {
 			case this.UP:
-				if (this.move.speed === 0 && this.max.y === this.min.y) {
+				direction = 1;
+				if (!this.isCovering && this.move.speed === 0 && this.max.y === this.min.y) {
 					// test is move is "legal"
 					point[1] -= this.move.min;
 					this.isCovering = Polyop.isPointInPolygon(point, available);
-					this.isOnline = !this.isCovering;
 				}
 				if (this.max.y !== this.min.y) {
 					this.move.slide = 1;
@@ -98,11 +192,11 @@ class Player {
 				}
 				break;
 			case this.RIGHT:
-				if (this.move.speed === 0 && this.max.x === this.min.x) {
+				direction = 2;
+				if (!this.isCovering && this.move.speed === 0 && this.max.x === this.min.x) {
 					// test is move is "legal"
 					point[0] += this.move.min;
 					this.isCovering = Polyop.isPointInPolygon(point, available);
-					this.isOnline = !this.isCovering;
 				}
 				if (this.max.x !== this.min.x) {
 					this.move.slide = 2;
@@ -111,11 +205,11 @@ class Player {
 				}
 				break;
 			case this.DOWN:
-				if (this.move.speed === 0 && this.max.y === this.min.y) {
+				direction = 3;
+				if (!this.isCovering && this.move.speed === 0 && this.max.y === this.min.y) {
 					// test is move is "legal"
 					point[1] += this.move.min;
 					this.isCovering = Polyop.isPointInPolygon(point, available);
-					this.isOnline = !this.isCovering;
 				}
 				if (this.max.y !== this.min.y) {
 					this.move.slide = 3;
@@ -124,11 +218,11 @@ class Player {
 				}
 				break;
 			case this.LEFT:
-				if (this.move.speed === 0 && this.max.x === this.min.x) {
+				direction = 4;
+				if (!this.isCovering && this.move.speed === 0 && this.max.x === this.min.x) {
 					// test is move is "legal"
 					point[0] -= this.move.min;
 					this.isCovering = Polyop.isPointInPolygon(point, available);
-					this.isOnline = !this.isCovering;
 				}
 				if (this.max.x !== this.min.x) {
 					this.move.slide = 4;
@@ -136,6 +230,19 @@ class Player {
 					this.x = Math.max(this.x - this.move.speed, this.min.x);
 				}
 				break;
+		}
+
+		if (this.isCovering && this.move.direction !== direction) {
+			// add point
+			this.history.push([this.x, this.y]);
+		}
+
+		// save movement direction
+		this.move.direction = direction;
+
+		// start fresh history
+		if (this.isOnline) {
+			this.history = [[this.x, this.y]];
 		}
 	}
 
@@ -150,19 +257,19 @@ class Player {
 		switch (this.move.slide) {
 			case 1: // UP
 				this.y = Math.max(this.y - this.move.speed, this.min.y);
-				//if (this.y === this.min.y && this.isCovering) this.closePath();
+				if (this.y === this.min.y && this.isCovering) this.closePath();
 				break;
 			case 2: // RIGHT
 				this.x = Math.min(this.x + this.move.speed, this.max.x);
-				//if (this.x === this.max.x && this.isCovering) this.closePath();
+				if (this.x === this.max.x && this.isCovering) this.closePath();
 				break;
 			case 3: // DOWN
 				this.y = Math.min(this.y + this.move.speed, this.max.y);
-				//if (this.y === this.max.y && this.isCovering) this.closePath();
+				if (this.y === this.max.y && this.isCovering) this.closePath();
 				break;
 			case 4: // LEFT
 				this.x = Math.max(this.x - this.move.speed, this.min.x);
-				//if (this.x === this.min.x && this.isCovering) this.closePath();
+				if (this.x === this.min.x && this.isCovering) this.closePath();
 				break;
 		}
 	}
@@ -195,7 +302,7 @@ class Player {
 	render() {
 		let ctx = this.ctx,
 			pi2 = Math.PI * 2,
-			shape = this.history.polygon,
+			shape = this.history,
 			gradient;
 
 		ctx.save();
@@ -208,6 +315,7 @@ class Player {
 			ctx.beginPath();
 			ctx.moveTo(shape[0][0], shape[0][1]);
 			shape.slice(1).map(point => ctx.lineTo(point[0], point[1]));
+			ctx.lineTo(this.x, this.y);
 			ctx.stroke();
 		}
 
