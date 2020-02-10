@@ -4,8 +4,8 @@ class Player {
 		this.name = "Player";
 		this.ctx = GAME.ctx;
 
-		this.x = 20;
-		this.y = 220;
+		this.x = 220;
+		this.y = 20;
 		this.size = 9;
 		this.ring = 0;
 		this.move = {
@@ -18,6 +18,9 @@ class Player {
 		// boundries
 		this.max = { x: 20, y: 20 };
 		this.min = { x: 20, y: 20 };
+
+		// trail
+		this.trail = [];
 	}
 
 	destroy() {
@@ -94,6 +97,8 @@ class Player {
 				this.x = Math.max(this.x - this.move.speed, this.min.x);
 				break;
 		}
+
+		this.isMoving = true;
 	}
 
 	slide() {
@@ -102,6 +107,7 @@ class Player {
 		if (this.move.speed <= this.move.min) {
 			this.move.speed = 0;
 			delete this.slide;
+			delete this.isMoving;
 		}
 		// deceleration
 		switch (this.move.slide) {
@@ -129,8 +135,24 @@ class Player {
 		this.ring += 0.12;
 		if (this.ring > 13) this.ring = 1;
 
+		// player movement
 		if (this.UP || this.RIGHT || this.DOWN || this.LEFT) this.checkMove();
 		else if (this.move.slide) this.slide();
+
+		if (this.isMoving) {
+			this.trail.push({
+				x: this.x,
+				y: this.y,
+				size: this.size / 2,
+				ttl: 17,
+			});
+		}
+
+		// player trail
+		this.trail.map((trail, i) => {
+			trail.ttl--;
+			if (trail.ttl < 0) this.trail.splice(i, 1);
+		});
 	}
 
 	render() {
@@ -146,8 +168,20 @@ class Player {
 		gradient.addColorStop(0.7, "#f8f");
 		gradient.addColorStop(1, "#fff");
 
-		// plater ring
-		ctx.lineWidth = 2.5;
+		// player trail
+		ctx.save();
+		ctx.fillStyle = "#f3f";
+		ctx.globalCompositeOperation = "lighten";
+		this.trail.map(trail => {
+			ctx.beginPath();
+			ctx.arc(trail.x, trail.y, trail.size, 0, pi2);
+			ctx.globalAlpha = trail.ttl / 17;
+			ctx.fill();
+		});
+		ctx.restore();
+
+		// player ring
+		ctx.lineWidth = 3;
 
 		// player dot
 		ctx.fillStyle = gradient;

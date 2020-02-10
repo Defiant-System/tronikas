@@ -7,7 +7,7 @@ class Sparkle {
 		this.ttl = 20;
 		this.rgb = color || "200,100,0";
 
-		let len = this.randomInteger(15, 30),
+		let len = 23,
 			pi = Math.PI,
 			pih = pi/2,
 			pi2 = 2 * pi,
