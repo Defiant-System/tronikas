@@ -92,7 +92,7 @@ class Board {
 	}
 
 	update() {
-		
+		// nothing to do
 	}
 
 	render() {
@@ -109,7 +109,6 @@ class Board {
 		ctx.strokeStyle = "rgba(255,255,255,.25)";
 		ctx.lineWidth = 1;
 
-
 		// base rectangle
 		shape = polygon[0];
 		ctx.beginPath();
@@ -117,7 +116,6 @@ class Board {
 		shape.slice(1).map(point => ctx.lineTo(point[0], point[1]));
 		ctx.closePath();
 		ctx.stroke();
-
 		
 		// available area
 		ctx.lineWidth = 3;
@@ -127,8 +125,6 @@ class Board {
 		available.map(point => ctx.lineTo(point[0], point[1]));
 		ctx.closePath();
 		ctx.stroke();
-
-
 
 		ctx.restore();
 	}

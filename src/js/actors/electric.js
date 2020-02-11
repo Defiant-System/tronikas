@@ -101,6 +101,8 @@ class Electric {
 			len = points.length,
 			pi2 = Math.PI * 2;
 
+		ctx.save();
+
 		// Blur
 		if (this.blur) {
 			ctx.save();
@@ -143,5 +145,7 @@ class Electric {
 
 		// Draw children
 		this.children.map(child => child.render());
+
+		ctx.restore();
 	}
 }
