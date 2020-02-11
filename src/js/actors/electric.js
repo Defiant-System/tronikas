@@ -8,19 +8,15 @@ class Electric {
 		this.endPoint = endPoint || new Vector(240, 240);
 		this.children = [];
 
-		this.blur = 21;
-		this.blurColor = "rgba(180, 180, 255, 0.55)";
 		this.color = "rgba(255, 255, 255, 1)";
+		this.blurColor = "rgba(180, 180, 255, 0.55)";
+		this.blur = 21;
 		this.speed = 0.025;
 		this.amplitude = .75;
 		this.lineWidth = 3;
 		this.points = null;
 		this.off = 0;
 		this.simplexNoise = new SimplexNoise;
-
-		this.parent = parent;
-		this.startStep = 0;
-		this.endStep = 0;
 
 		if (!parent) {
 			for (let i=0; i<2; i++) {
