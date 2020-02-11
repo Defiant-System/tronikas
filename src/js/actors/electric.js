@@ -1,12 +1,12 @@
 
 class Electric {
-	constructor(startPoint, endPoint, parent) {
+	constructor(parent) {
 		this.name = "Electric";
 		this.ctx = GAME.ctx;
 
-		this.startPoint = startPoint || new Vector(100, 100);
-		this.endPoint = endPoint || new Vector(240, 240);
-		this.children = [];
+		this.startPoint = parent ? parent.startPoint : new Vector(100, 100);
+		this.endPoint = parent ? parent.endPoint : new Vector(240, 240);
+		this.parent = parent;
 
 		this.color = "rgba(255, 255, 255, 1)";
 		this.blurColor = "rgba(180, 180, 255, 0.55)";
@@ -19,18 +19,16 @@ class Electric {
 		this.simplexNoise = new SimplexNoise;
 
 		if (!parent) {
+			this.children = [];
 			for (let i=0; i<2; i++) {
-				let child = new Electric(this.startPoint, this.endPoint, this);
+				let child = new Electric(this);
 				this.children.push(child);
 			}
 		}
 	}
 
 	destroy() {
-		if (this._timeoutId) {
-			clearTimeout(this._timeoutId);
-		}
-		this.simplexNoise = null;
+		
 	}
 
 	random(max, min) {
@@ -58,9 +56,11 @@ class Electric {
 		let _sin = Math.sin,
 			_cos = Math.cos,
 			_pi = Math.PI,
-			length = this.startPoint.distanceTo(this.endPoint),
+			startPoint = this.parent ? this.parent.startPoint : this.startPoint,
+			endPoint = this.parent ? this.parent.endPoint : this.endPoint,
+			length = startPoint.distanceTo(endPoint),
 			step = length / 5,
-			normal = this.endPoint.clone().sub(this.startPoint).normalize().scale(length / step),
+			normal = endPoint.clone().sub(startPoint).normalize().scale(length / step),
 			radian = normal.angle(),
 			sinv   = _sin(radian),
 			cosv   = _cos(radian),
@@ -78,21 +78,23 @@ class Electric {
 				bx = sinv * bv,
 				by = cosv * bv,
 				m = _sin((_pi * (i / (len - 1)))),
-				x = this.startPoint.x + normal.x * i + (ax - bx) * m,
-				y = this.startPoint.y + normal.y * i - (ay - by) * m;
+				x = startPoint.x + normal.x * i + (ax - bx) * m,
+				y = startPoint.y + normal.y * i - (ay - by) * m;
 
 			points.push(new Vector(x, y));
 		}
-
-		this.children.map(child => {
-			child.color     = this.color;
-			child.speed     = this.speed * 1.35;
-			child.amplitude = this.amplitude;
-			child.lineWidth = this.lineWidth * 0.75;
-			child.blur      = this.blur;
-			child.blurColor = this.blurColor;
-			child.update();
-		});
+		
+		if (this.children) {
+			this.children.map(child => {
+				child.color     = this.color;
+				child.speed     = this.speed * 1.35;
+				child.amplitude = this.amplitude;
+				child.lineWidth = this.lineWidth * 0.75;
+				child.blur      = this.blur;
+				child.blurColor = this.blurColor;
+				child.update();
+			});
+		}
 	}
 
 	render() {
@@ -100,8 +102,6 @@ class Electric {
 			points = this.points,
 			len = points.length,
 			pi2 = Math.PI * 2;
-
-		ctx.save();
 
 		// Blur
 		if (this.blur) {
@@ -144,8 +144,8 @@ class Electric {
 		*/
 
 		// Draw children
-		this.children.map(child => child.render());
-
-		ctx.restore();
+		if (this.children) {
+			this.children.map(child => child.render());
+		}
 	}
 }
