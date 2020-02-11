@@ -105,7 +105,7 @@ class Pi {
 		ctx.rotate(this.angle * 2 * pi2);
 		ctx.shadowBlur = 0;
 		ctx.lineWidth = this.thickness * 1.5;
-		ctx.globalCompositeOperation = 'source-atop';
+		ctx.globalCompositeOperation = "source-atop";
 		
 		pLen = pi2 / this.colors.length;
 		for (let i=0, il=this.colors.length; i<il; i++) {

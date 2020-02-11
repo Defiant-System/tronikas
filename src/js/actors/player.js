@@ -350,7 +350,7 @@ class Player {
 		ctx.fillStyle = "#f3f";
 		ctx.globalCompositeOperation = "lighten";
 		this.trail.map(trail => {
-			ctx.beginPath();
+			//ctx.beginPath();
 			ctx.arc(trail.x, trail.y, trail.size, 0, pi2);
 			ctx.globalAlpha = trail.ttl / 17;
 			ctx.fill();
@@ -368,7 +368,7 @@ class Player {
 
 		// player dot
 		ctx.fillStyle = gradient;
-		ctx.beginPath();
+		//ctx.beginPath();
 		ctx.arc(this.x, this.y, this.size, 0, pi2);
 		ctx.fill();
 

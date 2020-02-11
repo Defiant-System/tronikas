@@ -1,18 +1,30 @@
 
 class Vector {
 	constructor(x, y) {
-		this.x = x;
-		this.y = y;
+		this.x = x || 0;
+		this.y = y || 0;
+	}
+
+	set(x, y) {
+		if (typeof x === 'object') {
+			y = x.y;
+			x = x.x;
+		}
+		this.x = x || 0;
+		this.y = y || 0;
+		return this;
 	}
 
 	add(vector) {
 		this.x += vector.x;
 		this.y += vector.y;
+        return this;
 	}
 
 	sub(vector) {
 		this.x -= vector.x;
 		this.y -= vector.y;
+        return this;
 	}
 
 	multiply(vector) {
@@ -23,6 +35,7 @@ class Vector {
 			this.x *= vector.x;
 			this.y *= vector.y;
 		}
+        return this;
 	}
 
 	divide(vector) {
@@ -33,13 +46,25 @@ class Vector {
 			this.x /= vector.x;
 			this.y /= vector.y;
 		}
+        return this;
 	}
+
+	scale(s) {
+		this.x *= s;
+		this.y *= s;
+        return this;
+	}
+
+    angle() {
+        return Math.atan2(this.y, this.x);
+    }
 
 	normalize() {
 		var m = this.magnitude();
 		if (m > 0) {
 			this.divide(m);
 		}
+        return this;
 	}
 
 	magnitude() {
@@ -53,6 +78,20 @@ class Vector {
 			this.normalize();
 			this.multiply(high);
 		}
+	}
+
+	clone() {
+		return new Vector(this.x, this.y);
+	}
+
+	distanceTo(vector) {
+		return Math.sqrt(this.distanceToSquared(vector));
+	}
+
+	distanceToSquared(vector) {
+		var dx = vector.x - this.x,
+			dy = vector.y - this.y;
+		return dx * dx + dy * dy;
 	}
 
 	static reflect(n, v) {

@@ -1,7 +1,7 @@
 
 class FPS {
 	constructor() {
-		this.name = "FPS monitor";
+		this.name = "FPS";
 	}
 
 	destroy() {

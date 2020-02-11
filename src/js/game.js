@@ -1,5 +1,6 @@
 
-ant_require("polyop/vector.js");
+ant_require("misc/vector.js");
+ant_require("misc/simplexNoise.js");
 
 ant_require("actors/stars.js");
 ant_require("actors/board.js");
@@ -9,6 +10,7 @@ ant_require("actors/sparkle.js");
 ant_require("actors/walker.js");
 ant_require("actors/photon.js");
 ant_require("actors/pi.js");
+ant_require("actors/electric.js");
 
 
 const GAME = {
@@ -31,6 +33,7 @@ const GAME = {
 		//this.addActor(new Walker);
 		//this.addActor(new Photon);
 		//this.addActor(new Pi);
+		this.addActor(new Electric);
 	},
 	performance: (window.performance || {
 		then: Date.now(),
