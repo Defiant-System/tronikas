@@ -8,7 +8,7 @@ class Bouncer {
 
 		this.radius = 6;
 		this.center = new Vector(100, 100);
-		this.direction = new Vector(3, 3);
+		this.vector = new Vector(3, 3);
 	}
 
 	destroy() {
@@ -16,26 +16,20 @@ class Bouncer {
 	}
 
 	update() {
-		let available = this.GAME.board.available,
-			i, il,
-			x0, y0, x1, y1,
-			line,
-			collision,
-			radian,
-			normal;
+		let polygon = this.board.available;
 
-		for (i=0, il=available.length; i<il; i++) {
-			x0 = available[i][0];
-			y0 = available[i][1];
-			x1 = available[(i+1) % il][0];
-			y1 = available[(i+1) % il][1];
-			line = [[x0, y0], [x1, y1]];
-			collision = Polyop.circleIntersectLine(this, line);
+		for (let i=0, il=polygon.length; i<il; i++) {
+			let x0 = polygon[i][0],
+				y0 = polygon[i][1],
+				x1 = polygon[(i+1) % il][0],
+				y1 = polygon[(i+1) % il][1],
+				line = [[x0, y0], [x1, y1]],
+				collision = Polyop.circleIntersectLine(this, line);
 
 			if (collision) {
-				radian = Math.atan2(y1 - y0, x1 - x0);
-				normal = Vector.getNormal(radian);
-				Vector.reflect(normal, this.direction);
+				let radian = Math.atan2(y1 - y0, x1 - x0),
+					normal = Vector.getNormal(radian);
+				Vector.reflect(normal, this.vector);
 
 				// collision sparkle
 				let spark = new Sparkle(collision.x, collision.y, radian);
@@ -43,7 +37,7 @@ class Bouncer {
 			}
 		}
 		// move item
-		this.center.add(this.direction);
+		this.center.add(this.vector);
 	}
 
 	render() {

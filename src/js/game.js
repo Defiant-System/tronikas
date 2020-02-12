@@ -11,6 +11,7 @@ ant_require("actors/walker.js");
 ant_require("actors/photon.js");
 ant_require("actors/pi.js");
 ant_require("actors/electric.js");
+ant_require("actors/gravity.js");
 
 
 const GAME = {
@@ -34,6 +35,7 @@ const GAME = {
 		//this.addActor(new Photon);
 		//this.addActor(new Pi);
 		//this.addActor(new Electric);
+		this.addActor(new Gravity);
 	},
 	performance: (window.performance || {
 		then: Date.now(),

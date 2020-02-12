@@ -74,8 +74,10 @@ class Stars {
 			py = stars[len].y * k + halfHeight;
 
 			if (px >= 0 && px <= this.width && py >= 0 && py <= this.height) {
-				shade = (1 - stars[len].z / 48),
-				size = Math.max(shade, 0.1) + 0.05;
+				shade = (1 - stars[len].z / 64),
+				size = Math.max(shade, 0.3) + 0.55;
+				//shade = (1 - stars[len].z / 48),
+				//size = Math.max(shade, 0.3) + 0.55;
 				c = 255 - Math.round(Math.abs(shade * 37));
 				ctx.beginPath();
 				ctx.fillStyle = 'rgba('+ c +','+ c +','+ c +',' + shade + ')';
