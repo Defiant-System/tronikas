@@ -1,27 +1,29 @@
 
 class Electric {
-	constructor(parent, speed, lineWidth) {
+	constructor(parent, speed, lineWidth, amplitude, color) {
 		this.name = "Electric";
+		this.GAME = GAME;
 		this.ctx = GAME.ctx;
 
-		this.startPoint = parent ? parent.startPoint : new Vector(100, 100);
-		this.endPoint = parent ? parent.endPoint : new Vector(240, 240);
 		this.parent = parent;
-
-		this.color = "rgba(255, 255, 255, 1)";
+		this.color = `rgba(${ color || "255, 255, 255" }, 1)`;
 		this.blurColor = "rgba(180, 180, 255, 0.55)";
 		this.blur = 21;
 		this.speed = speed || 0.025;
 		this.lineWidth = lineWidth || 3;
-		this.amplitude = .75;
+		this.amplitude = amplitude || 0.75;
 		this.points = null;
 		this.off = 0;
 		this.simplexNoise = new SimplexNoise;
 
 		if (!parent) {
-			this.children = [];
-			[...Array(2)].map(i => 
-				this.children.push(new Electric(this, this.speed * 1.35, this.lineWidth * 0.75)));
+			this.startPoint = new Vector(40, 40);
+			this.endPoint = new Vector(160, 110);
+			this.startVector = new Vector(this.random(.5, -.5), this.random(.5, -.5)).normalize();
+			this.endVector = new Vector(this.random(.5, -.5), this.random(.5, -.5)).normalize();
+
+			this.children = [...Array(2)].map(i =>
+				new Electric(this, 0.025, 2, 0.65, "230, 230, 255"));
 		}
 	}
 
@@ -50,6 +52,37 @@ class Electric {
 		return sum;
 	}
 
+	pointBoundries(point, vector, polygon) {
+		let vExtended = vector.clone().normalize().multiply(1e4),
+			dLine = [[point.x, point.y], [vExtended.x, vExtended.y]],
+			distances = [];
+
+		for (let i=0, il=polygon.length; i<il; i++) {
+			let x0 = polygon[i][0],
+				y0 = polygon[i][1],
+				x1 = polygon[(i+1) % il][0],
+				y1 = polygon[(i+1) % il][1],
+				line = [[x0, y0], [x1, y1]],
+				collision = LineHelper.lineIntersect(dLine, line),
+				dVector,
+				distance;
+			
+			if (collision) {
+				dVector = { x: collision[0], y: collision[1] };
+				distance = point.distanceTo(dVector);
+				distances.push({ ...dVector, x0, y0, x1, y1, distance});
+			}
+		}
+		// sort distances
+		distances.sort((a, b) => a.distance - b.distance);
+		
+		if (distances.length && distances[0].distance <= 3) {
+			let radian = Math.atan2(distances[0].y1 - distances[0].y0, distances[0].x1 - distances[0].x0),
+				normal = Vector.getNormal(radian);
+			Vector.reflect(normal, vector);
+		}
+	}
+
 	update() {
 		let _sin = Math.sin,
 			_cos = Math.cos,
@@ -58,7 +91,7 @@ class Electric {
 			startPoint = parent ? parent.startPoint : this.startPoint,
 			endPoint = parent ? parent.endPoint : this.endPoint,
 			length = startPoint.distanceTo(endPoint),
-			step = length / 5,
+			step = length / 4,
 			normal = endPoint.clone().sub(startPoint).normalize().scale(length / step),
 			radian = normal.angle(),
 			sinv   = _sin(radian),
@@ -68,7 +101,7 @@ class Electric {
 			waveWidth = (parent ? length * 1.25 : length) * this.amplitude;
 
 		
-		for (let i=0, len=step+1; i<len; i++) {
+		for (let i=0, len=step; i<len; i++) {
 			let n = i / 60,
 				av = waveWidth * this.noise(n - off, 0) * 0.5,
 				ax = sinv * av,
@@ -82,8 +115,31 @@ class Electric {
 
 			points.push(new Vector(x, y));
 		}
+		points.push(endPoint.clone());
 		
 		if (!parent) {
+       		let polygon = this.GAME.board.available,
+       			length = this.startPoint.distanceTo(this.endPoint);
+
+       		if (length < 100) {
+       			let vBrake = Vector.subtract(this.startPoint, this.endPoint).normalize();
+       			this.startVector.add(vBrake.scale(0.03)).limit(1.5);
+       			this.endVector.sub(vBrake.scale(0.015)).limit(1.5);
+       		}
+       		if (length > 260) {
+       			let vBrake = Vector.subtract(this.startPoint, this.endPoint).normalize();
+       			this.startVector.sub(vBrake.scale(0.03)).limit(1.5);
+       			this.endVector.sub(vBrake.scale(0.015)).limit(1.5);
+       		}
+       		// if (this.startVector.magnitude() > 3) this.startVector.normalize().scale(3);
+       		// if (this.endPoint.magnitude() > 3) this.endPoint.normalize().scale(3);
+
+
+			this.pointBoundries(this.startPoint, this.startVector, polygon);
+			this.pointBoundries(this.endPoint, this.endVector, polygon);
+
+			this.startPoint.add(this.startVector);
+			this.endPoint.add(this.endVector);
 			this.children.map(child => child.update());
 		}
 	}

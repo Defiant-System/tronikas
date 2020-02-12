@@ -144,7 +144,7 @@ class Player {
 			});
 
 			// sort intersections
-			intersection = intersection.sort((a, b) => a.distance - b.distance);
+			intersection.sort((a, b) => a.distance - b.distance);
 
 			this.lastPolyLine = [].concat(intersection[0].polyLine);
 
