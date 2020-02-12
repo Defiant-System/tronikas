@@ -117,10 +117,10 @@ class Photon {
 		this.end.point.add(this.end.vector);
 
 		if (!Polyop.isPointInPolygon([this.start.point.x, this.start.point.y], polygon)) {
-			this.start.point.sub(this.start.vector.scale(1.5));
+			this.start.point.sub(this.start.vector.scale(1.6));
 		}
 		if (!Polyop.isPointInPolygon([this.end.point.x, this.end.point.y], polygon)) {
-			this.end.point.sub(this.end.vector.scale(1.5));
+			this.end.point.sub(this.end.vector.scale(1.6));
 		}
 
 		// the trail

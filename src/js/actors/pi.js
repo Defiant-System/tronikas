@@ -57,7 +57,7 @@ class Pi {
 				Vector.reflect(normal, this.direction);
 
 				// collision sparkle
-				let spark = new Sparkle(collision.x, collision.y, radian, "100,255,100");
+				let spark = new Sparkle(collision.x, collision.y, radian, "255,100,220");
 				this.GAME.addActor(spark);
 				
 				this.rotation *= -1;

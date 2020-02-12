@@ -7,7 +7,7 @@ class Electric {
 
 		this.parent = parent;
 		this.color = `rgba(${ color || "255, 255, 255" }, 1)`;
-		this.blurColor = "rgba(180, 180, 255, 0.55)";
+		this.blurColor = "rgba(120, 255, 120, 0.5)";
 		this.blur = 21;
 		this.speed = speed || 0.025;
 		this.lineWidth = lineWidth || 3;
