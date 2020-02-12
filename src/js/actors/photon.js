@@ -7,88 +7,129 @@ class Photon {
 
 		this.color = '#66f';
 		this.trail = 11;
+		this.speed = 3.5;
 		this.log = [];
-		this.vectors = [];
 
-		this.vectors.push({
-			position: new Vector(100, 40),
-			direction: new Vector(-2, 2.5),
-		});
-		this.vectors.push({
-			position: new Vector(200, 170),
-			direction: new Vector(1.5, -2),
-		});
-
-		this.log.unshift({
-			x1: this.vectors[0].position.x,
-			y1: this.vectors[0].position.y,
-			x2: this.vectors[1].position.x,
-			y2: this.vectors[1].position.y
-		});
+		this.start = {
+			point: new Vector(130, 70),
+			vector: new Vector(this.random(3, -3), this.random(3, -3)),
+			//vector: new Vector(2, -.5),
+		};
+		this.end = {
+			point: new Vector(200, 170),
+			vector: new Vector(this.random(3, -3), this.random(3, -3)),
+			//vector: new Vector(2, -1),
+		};
 	}
 
 	destroy() {
 		GAME.deleteActor(this);
 	}
 
+	random(max, min) {
+		return Math.random() * (max - min) + min;
+	}
+
+	pointBoundries(point, vector, polygon) {
+		let vExtended = vector.clone().normalize().multiply(1e4),
+			dLine = [[point.x, point.y], [vExtended.x, vExtended.y]],
+			distances = [];
+
+		for (let i=0, il=polygon.length; i<il; i++) {
+			let x0 = polygon[i][0],
+				y0 = polygon[i][1],
+				x1 = polygon[(i+1) % il][0],
+				y1 = polygon[(i+1) % il][1],
+				line = [[x0, y0], [x1, y1]],
+				collision = LineHelper.lineIntersect(dLine, line),
+				dVector,
+				distance;
+			
+			if (collision) {
+				dVector = { x: collision[0], y: collision[1] };
+				distance = point.distanceTo(dVector);
+				distances.push({ ...dVector, x0, y0, x1, y1, distance});
+			}
+		}
+		// sort distances
+		distances.sort((a, b) => a.distance - b.distance);
+		
+		if (distances.length && distances[0].distance < this.speed) {
+			let collision = distances[0],
+				radian = Math.atan2(collision.y1 - collision.y0, collision.x1 - collision.x0),
+				normal = Vector.getNormal(radian);
+			Vector.reflect(normal, vector);
+
+			// collision sparkle
+			let spark = new Sparkle(collision.x, collision.y, radian, "100,100,255");
+			this.GAME.addActor(spark);
+		}
+	}
+
 	update() {
-		let available = this.GAME.board.available,
-			px0 = this.vectors[0].position.x + this.vectors[0].direction.x,
-			py0 = this.vectors[0].position.y + this.vectors[0].direction.y,
-			px1 = this.vectors[1].position.x + this.vectors[1].direction.x,
-			py1 = this.vectors[1].position.y + this.vectors[1].direction.y,
-			line = [[px0, py0], [px1, py1]],
-			line2, d0, d1,
-			x0, y0, x1, y1,
-			col = [],
-			pos;
+       	let polygon = this.GAME.board.available,
+       		length = this.start.point.distanceTo(this.end.point);
+		
+       	if (this.stop) return;
 
-		for (let i=0, il=available.length; i<il; i++) {
-			x0 = available[i][0];
-			y0 = available[i][1];
-			x1 = available[(i+1) % il][0];
-			y1 = available[(i+1) % il][1];
+		if (length < 61) {
+			let vB = Vector.subtract(this.start.point, this.end.point).normalize();
+			this.start.vector.add(vB.scale(0.1));
+			this.end.vector.sub(vB.scale(this.random(0, 1)));
+		}
+		if (length > 307) {
+			let vB = Vector.subtract(this.start.point, this.end.point).normalize();
+			this.start.vector.sub(vB.scale(this.random(0, 1)));
+			this.end.vector.sub(vB.scale(0.1));
+		}
 
-			line2 = [[x0, y0], [x1, y1]];
-			pos = Polyop.lineIntersect(line, line2);
+		// limit vectors 
+		this.start.vector.limit(this.speed);
+		this.end.vector.limit(this.speed);
+		this.pointBoundries(this.start.point, this.start.vector, polygon);
+		this.pointBoundries(this.end.point, this.end.vector, polygon);
 
-			if (pos) {
-				d0 = Polyop.distancePoints(pos, line[0]);
-				d1 = Polyop.distancePoints(pos, line[1]);
-				col.push({
-					pos,
-					rad: Math.atan2(y1 - y0, x1 - x0),
-					int: d1 > d0 ? 0 : 1
-				});
+		// collision detect and respons - corners
+		let line = [[this.start.point.x, this.start.point.y],
+					[this.end.point.x, this.end.point.y]];
+		for (let i=0, il=polygon.length; i<il; i++) {
+			let x0 = polygon[i][0],
+				y0 = polygon[i][1],
+				x1 = polygon[(i+1) % il][0],
+				y1 = polygon[(i+1) % il][1],
+				pLine = [[x0, y0], [x1, y1]],
+				collision = Polyop.lineIntersect(line, pLine);
+			
+			if (collision) {
+				let radian = Math.atan2(y1 - y0, x1 - x0),
+					normal = Vector.getNormal(radian);
+				Vector.reflect(normal, this.start.vector.scale(this.random(1.25, 2)));
+				Vector.reflect(normal, this.end.vector);
+
+				// collision sparkle
+				let spark = new Sparkle(collision[0], collision[1], radian, "100,100,255");
+				this.GAME.addActor(spark);
 			}
 		}
 
-		if (col.length === 1) {
-			let i = col[0].int,
-				normal = Vector.getNormal(col[0].rad);
-			Vector.reflect(normal, this.vectors[i].direction);
-			this.vectors[i].position.x = col[0].pos[0];
-			this.vectors[i].position.y = col[0].pos[1];
+		// move on
+		this.start.point.add(this.start.vector);
+		this.end.point.add(this.end.vector);
 
-			// collision sparkle
-			let spark = new Sparkle(col[0].pos[0], col[0].pos[1], col[0].rad, "100,100,255");
-			this.GAME.addActor(spark);
-			return;
+		if (!Polyop.isPointInPolygon([this.start.point.x, this.start.point.y], polygon)) {
+			this.start.point.sub(this.start.vector.scale(1.5));
 		}
-
-		if (Polyop.isPointInPolygon([px0, py0], available) && Polyop.isPointInPolygon([px1, py1], available)) {
-			this.vectors[0].position.add( this.vectors[0].direction );
-			this.vectors[1].position.add( this.vectors[1].direction );
+		if (!Polyop.isPointInPolygon([this.end.point.x, this.end.point.y], polygon)) {
+			this.end.point.sub(this.end.vector.scale(1.5));
 		}
 
 		// the trail
 		this.log.unshift({
-			x1: this.vectors[0].position.x,
-			y1: this.vectors[0].position.y,
-			x2: this.vectors[1].position.x,
-			y2: this.vectors[1].position.y
+			x1: this.start.point.x,
+			y1: this.start.point.y,
+			x2: this.end.point.x,
+			y2: this.end.point.y
 		});
-
 		this.log.splice(this.trail, 1e4);
 	}
 

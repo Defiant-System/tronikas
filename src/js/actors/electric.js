@@ -35,7 +35,6 @@ class Electric {
 		return Math.random() * (max - min) + min;
 	}
 
-
 	randomInteger(max, min) {
 		return this.random(max + 1, min) | 0;
 	}
@@ -118,22 +117,21 @@ class Electric {
 		points.push(endPoint.clone());
 		
 		if (!parent) {
-       		let polygon = this.GAME.board.available,
-       			length = this.startPoint.distanceTo(this.endPoint);
+			let polygon = this.GAME.board.available,
+				length = this.startPoint.distanceTo(this.endPoint);
 
-       		if (length < 73) {
-       			let vBrake = Vector.subtract(this.startPoint, this.endPoint).normalize();
-       			this.startVector.add(vBrake.scale(0.03)).limit(1.5);
-       			this.endVector.sub(vBrake.scale(0.02)).limit(1.5);
-       		}
-       		if (length > 271) {
-       			let vBrake = Vector.subtract(this.startPoint, this.endPoint).normalize();
-       			this.startVector.sub(vBrake.scale(0.03)).limit(1.5);
-       			this.endVector.sub(vBrake.scale(0.02)).limit(1.5);
-       		}
-       		// if (this.startVector.magnitude() > 3) this.startVector.normalize().scale(3);
-       		// if (this.endPoint.magnitude() > 3) this.endPoint.normalize().scale(3);
-
+			if (length < 73) {
+				let vBrake = Vector.subtract(this.startPoint, this.endPoint).normalize();
+				this.startVector.add(vBrake.scale(0.03)).limit(1.5);
+				this.endVector.sub(vBrake.scale(0.02)).limit(1.5);
+			}
+			if (length > 271) {
+				let vBrake = Vector.subtract(this.startPoint, this.endPoint).normalize();
+				this.startVector.sub(vBrake.scale(0.03)).limit(1.5);
+				this.endVector.sub(vBrake.scale(0.02)).limit(1.5);
+			}
+			// if (this.startVector.magnitude() > 3) this.startVector.normalize().scale(3);
+			// if (this.endPoint.magnitude() > 3) this.endPoint.normalize().scale(3);
 
 			this.pointBoundries(this.startPoint, this.startVector, polygon);
 			this.pointBoundries(this.endPoint, this.endVector, polygon);
@@ -179,12 +177,12 @@ class Electric {
 		/*
 		// start dot
 		ctx.save();
-        ctx.beginPath();
+		ctx.beginPath();
 		ctx.arc(this.startPoint.x, this.startPoint.y, 1.5, 0, pi2);
 		ctx.fill();
 
 		// end dot
-        ctx.beginPath();
+		ctx.beginPath();
 		ctx.arc(this.endPoint.x, this.endPoint.y, 1.5, 0, pi2);
 		ctx.fill();
 		ctx.restore();
