@@ -1,6 +1,6 @@
 
 class Electric {
-	constructor(parent) {
+	constructor(parent, speed, lineWidth) {
 		this.name = "Electric";
 		this.ctx = GAME.ctx;
 
@@ -11,19 +11,17 @@ class Electric {
 		this.color = "rgba(255, 255, 255, 1)";
 		this.blurColor = "rgba(180, 180, 255, 0.55)";
 		this.blur = 21;
-		this.speed = 0.025;
+		this.speed = speed || 0.025;
+		this.lineWidth = lineWidth || 3;
 		this.amplitude = .75;
-		this.lineWidth = 3;
 		this.points = null;
 		this.off = 0;
 		this.simplexNoise = new SimplexNoise;
 
 		if (!parent) {
 			this.children = [];
-			for (let i=0; i<2; i++) {
-				let child = new Electric(this);
-				this.children.push(child);
-			}
+			[...Array(2)].map(i => 
+				this.children.push(new Electric(this, this.speed * 1.35, this.lineWidth * 0.75)));
 		}
 	}
 
@@ -56,8 +54,9 @@ class Electric {
 		let _sin = Math.sin,
 			_cos = Math.cos,
 			_pi = Math.PI,
-			startPoint = this.parent ? this.parent.startPoint : this.startPoint,
-			endPoint = this.parent ? this.parent.endPoint : this.endPoint,
+			parent = this.parent,
+			startPoint = parent ? parent.startPoint : this.startPoint,
+			endPoint = parent ? parent.endPoint : this.endPoint,
 			length = startPoint.distanceTo(endPoint),
 			step = length / 5,
 			normal = endPoint.clone().sub(startPoint).normalize().scale(length / step),
@@ -66,7 +65,7 @@ class Electric {
 			cosv   = _cos(radian),
 			points = this.points = [],
 			off    = this.off += this.random(this.speed, this.speed * 0.2),
-			waveWidth = (this.parent ? length * 1.25 : length) * this.amplitude;
+			waveWidth = (parent ? length * 1.25 : length) * this.amplitude;
 
 		
 		for (let i=0, len=step+1; i<len; i++) {
@@ -84,16 +83,8 @@ class Electric {
 			points.push(new Vector(x, y));
 		}
 		
-		if (this.children) {
-			this.children.map(child => {
-				child.color     = this.color;
-				child.speed     = this.speed * 1.35;
-				child.amplitude = this.amplitude;
-				child.lineWidth = this.lineWidth * 0.75;
-				child.blur      = this.blur;
-				child.blurColor = this.blurColor;
-				child.update();
-			});
+		if (!parent) {
+			this.children.map(child => child.update());
 		}
 	}
 
