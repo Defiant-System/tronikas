@@ -91,7 +91,7 @@ class Electric {
 			startPoint = parent ? parent.startPoint : this.startPoint,
 			endPoint = parent ? parent.endPoint : this.endPoint,
 			length = startPoint.distanceTo(endPoint),
-			step = length / 4,
+			step = Math.max(length / 4, 25),
 			normal = endPoint.clone().sub(startPoint).normalize().scale(length / step),
 			radian = normal.angle(),
 			sinv   = _sin(radian),
@@ -121,15 +121,15 @@ class Electric {
        		let polygon = this.GAME.board.available,
        			length = this.startPoint.distanceTo(this.endPoint);
 
-       		if (length < 100) {
+       		if (length < 73) {
        			let vBrake = Vector.subtract(this.startPoint, this.endPoint).normalize();
        			this.startVector.add(vBrake.scale(0.03)).limit(1.5);
-       			this.endVector.sub(vBrake.scale(0.015)).limit(1.5);
+       			this.endVector.sub(vBrake.scale(0.02)).limit(1.5);
        		}
-       		if (length > 260) {
+       		if (length > 271) {
        			let vBrake = Vector.subtract(this.startPoint, this.endPoint).normalize();
        			this.startVector.sub(vBrake.scale(0.03)).limit(1.5);
-       			this.endVector.sub(vBrake.scale(0.015)).limit(1.5);
+       			this.endVector.sub(vBrake.scale(0.02)).limit(1.5);
        		}
        		// if (this.startVector.magnitude() > 3) this.startVector.normalize().scale(3);
        		// if (this.endPoint.magnitude() > 3) this.endPoint.normalize().scale(3);
