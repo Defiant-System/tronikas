@@ -29,7 +29,7 @@ const GAME = {
 
 		// start game
 		this.animationFrame = requestAnimationFrame(this.frame.bind(this));
-		this.addActor(new Stars);
+		//this.addActor(new Stars);
 		this.addActor(new Nebula);
 		this.addActor(new Board);
 		this.addActor(new Player);
@@ -38,7 +38,7 @@ const GAME = {
 		//this.addActor(new Photon);
 		//this.addActor(new Pi);
 		//this.addActor(new Electric);
-		this.addActor(new Gravity);
+		//this.addActor(new Gravity);
 	},
 	performance: (window.performance || {
 		then: Date.now(),

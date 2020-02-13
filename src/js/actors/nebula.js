@@ -78,25 +78,26 @@ class Nebula {
 	generateImage() {
 		let ctx = this.noise.ctx,
 			xmin = this.width * .2,
-			xmax = xmin + this.width * .6,
+			xmax = xmin + (this.width * .6),
 			ymin = this.height * .35,
-			ymax = ymin + this.height * .3,
+			ymax = ymin + (this.height * .25),
 			color = ["rgb(120, 20, 20)", "rgb(20, 60, 10)", "rgb(10, 20, 80)", "rgb(40, 30, 10)"],
 			pi2 = Math.PI * 2,
-			len = 50;
+			len = 3;
 
 		while (len--) {
-			let x = this.randomInteger(xmin, xmax),
-				y = this.randomInteger(ymin, ymax);
-			this.addParticles(x + (len * 2), y, 0);
-			this.addParticles(x + len, y + len, 1);
-			this.addParticles(x + len, y - (len * 2), 2);
-			this.addParticles(x - len, y + len, 4);
+			this.addParticles(this.randomInteger(xmin, xmax), this.randomInteger(ymin, ymax), 0, 25);
+			this.addParticles(this.randomInteger(xmin, xmax), this.randomInteger(ymin, ymax), 1, 15);
+			this.addParticles(this.randomInteger(xmin, xmax), this.randomInteger(ymin, ymax), 2, 15);
+			this.addParticles(this.randomInteger(xmin, xmax), this.randomInteger(ymin, ymax), 3, 15);
+			this.addParticles(this.randomInteger(xmin, xmax), this.randomInteger(ymin, ymax), 1, 15);
+			this.addParticles(this.randomInteger(xmin, xmax), this.randomInteger(ymin, ymax), 0, 25);
 		}
 
 		ctx.clearRect(0, 0, this.width, this.height);
+		ctx.fillRect(0, 0, this.width, this.height);
 		ctx.globalAlpha = 1.0;
-		ctx.globalCompositeOperation = "lighter";
+		//ctx.globalCompositeOperation = "lighter";
 
 		let particles = this.particles;
 		while (particles.length) {
@@ -109,7 +110,7 @@ class Nebula {
 
 			ctx.fillStyle = color[p.color % color.length];
 	        ctx.beginPath();
-	        ctx.arc(p.x, p.y, .5, 0, pi2, true);
+	        ctx.arc(p.x, p.y, .75, 0, pi2, true);
 	        ctx.closePath();
 	        ctx.fill();
 
@@ -120,13 +121,12 @@ class Nebula {
 		this.image = this.noise.cvs;
 	}
 
-	addParticles(x, y, color) {
-		let count = 10;
+	addParticles(x, y, color, count) {
 		while (count--) {
 			this.particles.push({
 				x, y, color,
-				vx: this.fuzzy(20.0),
-				vy: this.fuzzy(20.0),
+				vx: this.fuzzy(10.0),
+				vy: this.fuzzy(10.0),
 				age: 0
 			});
 		}
