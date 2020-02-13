@@ -6,18 +6,17 @@ class Stars {
 		this.width = GAME.width;
 		this.height = GAME.height;
 
-		let stars = [],
-			maxDepth = 64,
-			len = 192;
-		while (len--) {
-			stars.push({
+		this.maxDepth = 64;
+		this.stars = [];
+
+		let count = 192;
+		while (count--) {
+			this.stars.push({
 				x: this.randomInteger(-25, 25),
 				y: this.randomInteger(-25, 25),
-				z: this.randomInteger(1, maxDepth)
+				z: this.randomInteger(1, this.maxDepth)
 			});
 		}
-		this.stars = stars;
-		this.maxDepth = 32;
 	}
 
 	destroy() {
@@ -32,14 +31,14 @@ class Stars {
 		return Math.floor(this.random(a, b));
 	}
 
-	update() {
+	update(delta) {
 		let halfWidth = this.width / 2,
 			halfHeight = this.height / 2,
 			stars = this.stars,
 			len = stars.length;
 
 		while (len--) {
-			stars[len].z -= 0.02;
+			stars[len].z -= 0.01;
 
 			if (stars[len].z <= 0) {
 				stars[len].x = this.randomInteger(-25, 25);
@@ -50,7 +49,10 @@ class Stars {
 	}
 
 	render() {
-		let ctx = this.ctx,
+		let _max = Math.max,
+			_round = Math.round,
+			_abs = Math.abs,
+			ctx = this.ctx,
 			pi2 = Math.PI * 2,
 			halfWidth = this.width / 2,
 			halfHeight = this.height / 2,
@@ -63,8 +65,7 @@ class Stars {
 			k,
 			c;
 
-		ctx.fillStyle = 'rgba(0,0,0,0.37)';
-		ctx.fillRect(0, 0, this.width, this.height);
+		//ctx.fillRect(0, 0, this.width, this.height);
 		ctx.save();
 		ctx.translate(0.5, 0.5);
 
@@ -74,18 +75,16 @@ class Stars {
 			py = stars[len].y * k + halfHeight;
 
 			if (px >= 0 && px <= this.width && py >= 0 && py <= this.height) {
-				shade = (1 - stars[len].z / 64),
-				size = Math.max(shade, 0.3) + 0.55;
-				//shade = (1 - stars[len].z / 48),
-				//size = Math.max(shade, 0.3) + 0.55;
-				c = 255 - Math.round(Math.abs(shade * 37));
+				shade = (1 - stars[len].z / 48),
+				size = _max(shade, 0.1) + 0.45;
+				c = 255 - _round(_abs(shade * 37));
 				ctx.beginPath();
 				ctx.fillStyle = 'rgba('+ c +','+ c +','+ c +',' + shade + ')';
-				//ctx.fillRect(px, py, size, size);
 				ctx.arc(px, py, size, 0, pi2);
-    			ctx.fill();
+				ctx.fill();
 			}
 		}
+
 		ctx.restore();
 	}
 }

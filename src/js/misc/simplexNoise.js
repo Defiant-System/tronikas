@@ -1,4 +1,13 @@
-
+/*
+ * A fast javascript implementation of simplex noise by Jonas Wagner
+ *
+ * Based on a speed-improved simplex noise algorithm for 2D, 3D and 4D in Java.
+ * Which is based on example code by Stefan Gustavson (stegu@itn.liu.se).
+ * With Optimisations by Peter Eastman (peastman@drizzle.stanford.edu).
+ * Better rank ordering method by Stefan Gustavson in 2012.
+ *
+ */
+ 
 class SimplexNoise {
 	constructor() {
 		this.F2 = 0.5 * (Math.sqrt(3.0) - 1.0);

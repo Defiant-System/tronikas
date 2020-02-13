@@ -3,6 +3,8 @@ ant_require("misc/vector.js");
 ant_require("misc/simplexNoise.js");
 
 ant_require("actors/stars.js");
+ant_require("actors/nebula.js");
+
 ant_require("actors/board.js");
 ant_require("actors/player.js");
 ant_require("actors/bouncer.js");
@@ -28,6 +30,7 @@ const GAME = {
 		// start game
 		this.animationFrame = requestAnimationFrame(this.frame.bind(this));
 		this.addActor(new Stars);
+		this.addActor(new Nebula);
 		this.addActor(new Board);
 		this.addActor(new Player);
 		//this.addActor(new Bouncer);
