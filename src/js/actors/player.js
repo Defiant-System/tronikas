@@ -33,15 +33,15 @@ class Player {
 		this.isOnline = true;
 
 		// temp
-		this.history = [[350,20],[350,50],[250,50],[250,170],[300,170],[300,130],[490,130]];
-		this.x = this.history[this.history.length-1][0];
-		this.y = this.history[this.history.length-1][1];
-		this.move.direction = 2;
-		this.isCovering = true;
-		this.isOnline = false;
+		// this.history = [[350,20],[350,50],[250,50],[250,170],[300,170],[300,130],[490,130]];
+		// this.x = this.history[this.history.length-1][0];
+		// this.y = this.history[this.history.length-1][1];
+		// this.move.direction = 2;
+		// this.isCovering = true;
+		// this.isOnline = false;
 
-		// start fuse
-		this.fuseCountdown();
+		// // start fuse
+		// this.fuseCountdown();
 	}
 
 	destroy() {

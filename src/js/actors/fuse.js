@@ -23,6 +23,8 @@ class Fuse {
 	}
 
 	destroy() {
+		this.isDestroyed = true;
+
 		GAME.deleteActor(this);
 	}
 
@@ -53,16 +55,17 @@ class Fuse {
 			normal,
 			pi = Math.PI;
 
+		// reset min & max
+		this.min = { x: 0, y: 0 };
+		this.max = { x: 0, y: 0 };
+
 		// add current position of the player
 		polygon.push([this.player.x, this.player.y]);
 
 		// calculate normal
-		pos2 = polygon[Math.min(len + 1, polygon.length - 1)];
+		//pos2 = polygon[Math.min(len + 1, polygon.length - 1)];
+		pos2 = polygon[len + 1];
 		normal = (Math.atan(pos2[1] - pos1[1], pos2[0] - pos1[0]) + pi) % pi;
-
-		// reset min & max
-		this.min = { x: 0, y: 0 };
-		this.max = { x: 0, y: 0 };
 
 		if (normal === 0) {
 			if (this.x < pos1[0] || this.x < pos2[0]) {
@@ -84,7 +87,8 @@ class Fuse {
 	}
 
 	update() {
-		let polygon = [].concat(this.player.history);
+		// exit if this is destoryed
+		if (this.isDestroyed) return;
 
 		// move fuse
 		switch (this.dir) {
@@ -93,20 +97,21 @@ class Fuse {
 			case 3: this.y = Math.min(this.y + this.speed, this.max.y); break;
 			case 4: this.x = Math.max(this.x - this.speed, this.min.x); break;
 		}
+
 		// check if fuse catched up player
 		if (this.x === this.player.x && this.y === this.player.y) {
 			console.log('game-over');
 			this.destroy();
-		} else if (this.x === this.max.x
-			|| this.x === this.min.x
-			|| this.y === this.max.y
-			|| this.y === this.min.y) {
-
-			this.path = polygon.slice(0, this.path.length);
+		} else if (this.x === this.max.x || this.x === this.min.x
+				|| this.y === this.max.y || this.y === this.min.y) {
 			this.path.push([this.x, this.y]);
-			this.checkDirection(polygon);
 		}
 
+		// check fuse path
+		let polygon = [].concat(this.player.history);
+		this.checkDirection(polygon);
+
+		// burn fuse sparks
 		this.sparks.map((item, i) => {
 			item.dir.multiply(item.acc);
 			item.pos.add(item.dir);
