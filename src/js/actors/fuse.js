@@ -12,10 +12,9 @@ class Fuse {
 		this.y = this.path[this.path.length-1][1];
 		this.speed = this.player.move.max / 2;
 
-		this.checkDirection(polygon);
+		this.sparks = [];
 
-		// let spark = new Sparkle(this.x, this.y, false, "0,200,200");
-		// this.GAME.addActor(spark);
+		this.checkDirection(polygon);
 
 		// temp
 		// this.path = [[350,20],[350,50],[250,50],[250,170]];
@@ -24,7 +23,26 @@ class Fuse {
 	}
 
 	destroy() {
-		
+		GAME.deleteActor(this);
+	}
+
+	random(max, min) {
+		return Math.random() * (max - min) + min;
+	}
+
+	randomInteger(max, min) {
+		return this.random(max + 1, min) | 0;
+	}
+
+	spark(x, y) {
+		let angle = this.random(0, 2 * Math.PI);
+		return {
+			ttl : 7,
+			size: this.randomInteger(4, 7),
+			dir : new Vector(Math.sin(angle) * 5, -Math.cos(angle) * 5),
+			acc : new Vector(.3, .3),
+			pos : new Vector(x, y)
+		};
 	}
 
 	checkDirection(polygon) {
@@ -78,6 +96,7 @@ class Fuse {
 		// check if fuse catched up player
 		if (this.x === this.player.x && this.y === this.player.y) {
 			console.log('game-over');
+			this.destroy();
 		} else if (this.x === this.max.x
 			|| this.x === this.min.x
 			|| this.y === this.max.y
@@ -87,6 +106,19 @@ class Fuse {
 			this.path.push([this.x, this.y]);
 			this.checkDirection(polygon);
 		}
+
+		this.sparks.map((item, i) => {
+			item.dir.multiply(item.acc);
+			item.pos.add(item.dir);
+			item.size -= item.size / 7;
+
+			if (item.ttl-- < 0) {
+				this.sparks.splice(i, 1);
+			}
+		});
+
+		let spark = this.spark(this.x, this.y);
+		this.sparks.push(spark);
 	}
 
 	render() {
@@ -96,15 +128,26 @@ class Fuse {
 
 		ctx.save();
 		ctx.translate(0.5, 0.5);
+		ctx.globalCompositeOperation = "lighter";
 
-	//	ctx.fillStyle = `rgba(100,100,100,.5)`;
-	//	ctx.beginPath();
-	//	ctx.arc(this.x, this.y, 5, 0, pi2);
-	//	ctx.closePath();
-	//	ctx.fill();
-		
+		this.sparks.map(item => {
+			// dot gradient
+			let gradient = ctx.createRadialGradient(item.pos.x, item.pos.y, item.size*2, item.pos.x, item.pos.y, 0);
+			gradient.addColorStop(0, 'transparent');
+			gradient.addColorStop(0.8, '#f33');
+			gradient.addColorStop(1, '#fee');
+
+			ctx.fillStyle = gradient;
+			ctx.beginPath();
+			ctx.arc(item.pos.x, item.pos.y, item.size, 0, pi2);
+			ctx.closePath();
+			ctx.fill();
+		});
+
 		ctx.lineWidth = 2;
-		ctx.strokeStyle = "rgba(255,100,100,.5)";
+		ctx.strokeStyle = "rgba(255,80,80,.5)";
+		ctx.globalCompositeOperation = "source-over";
+
 		ctx.beginPath();
 		ctx.moveTo(path[0][0], path[0][1]);
 		path.slice(1).map(point => ctx.lineTo(point[0], point[1]));
