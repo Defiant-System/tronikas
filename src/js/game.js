@@ -7,6 +7,7 @@ ant_require("actors/nebula.js");
 
 ant_require("actors/board.js");
 ant_require("actors/player.js");
+ant_require("actors/fuse.js");
 ant_require("actors/bouncer.js");
 ant_require("actors/sparkle.js");
 ant_require("actors/walker.js");

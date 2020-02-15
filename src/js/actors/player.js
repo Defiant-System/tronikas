@@ -2,6 +2,7 @@
 class Player {
 	constructor() {
 		this.name = "Player";
+		this.GAME = GAME;
 		this.ctx = GAME.ctx;
 
 		this.x = 200;
@@ -22,17 +23,25 @@ class Player {
 		// trail
 		this.trail = [];
 
+		// fuse
+		this.fuse = false;
+		this.fuseTimeout = false;
+		this.fuseIgnite = 1000;
+
 		// move history
 		this.history = [];
 		this.isOnline = true;
 
 		// temp
-		// this.history = [[350,20],[350,50],[250,50],[250,170],[300,170],[300,130]];
-		// this.x = this.history[this.history.length-1][0];
-		// this.y = this.history[this.history.length-1][1];
-		// this.move.direction = 1;
-		// this.isCovering = true;
-		// this.isOnline = false;
+		this.history = [[350,20],[350,50],[250,50],[250,170],[300,170],[300,130],[490,130]];
+		this.x = this.history[this.history.length-1][0];
+		this.y = this.history[this.history.length-1][1];
+		this.move.direction = 1;
+		this.isCovering = true;
+		this.isOnline = false;
+
+		// start fuse
+		this.fuseCountdown();
 	}
 
 	destroy() {
@@ -46,6 +55,20 @@ class Player {
 
 		// add final point
 		polygon.push(point);
+
+		// destroy fuse if ignited
+		if (this.fuse) {
+			// remove fuse from actors stack
+			this.GAME.deleteActor(this.fuse);
+
+			// signal fuse for destruction
+			this.fuse.destroy();
+			this.fuse = false;
+
+			// prevent fuse
+			clearTimeout(this.fuseTimeout);
+			delete this.fuseTimeout;
+		}
 
 		// reset player
 		this.isCovering = false;
@@ -83,6 +106,10 @@ class Player {
 			point = [this.x, this.y],
 			pi = Math.PI,
 			direction;
+
+		// prevent fuse
+		clearTimeout(this.fuseTimeout);
+		delete this.fuseTimeout;
 
 		if (this.isCovering) {
 			let line = [[this.x, this.y], [this.x, this.y]],
@@ -285,12 +312,27 @@ class Player {
 		};
 	}
 
+	fuseCountdown() {
+		var self = this;
+
+		if (this.fuse || !this.isCovering) return;
+
+		// fuse ignition
+		this.fuseTimeout = setTimeout(() => {
+			self.fuse = new Fuse;
+			self.GAME.addActor(self.fuse);
+		}, this.fuseIgnite);
+	}
+
 	slide() {
 		this.move.speed = Math.max(this.move.speed - this.move.acc, this.move.min);
 		
 		if (this.move.speed <= this.move.min) {
 			this.move.speed = 0;
 			delete this.move.slide;
+
+			// start fuse
+			this.fuseCountdown();
 		}
 		// deceleration
 		switch (this.move.slide) {
@@ -321,7 +363,7 @@ class Player {
 		// player movement
 		if (this.UP || this.RIGHT || this.DOWN || this.LEFT) this.checkMove();
 		else if (this.move.slide) this.slide();
-		
+
 		// check if player crosses itself
 		if (this.isCovering) this.checkSelfCrossing();
 

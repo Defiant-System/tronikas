@@ -19,6 +19,7 @@ class Sparkle {
 				case pih: angle = this.random(pi, pi2); break;
 				case pi: angle = this.random(-pih, pih); break;
 				case -pih: angle = this.random(0, pi); break;
+				default: angle = this.random(0, pi2);
 			}
 			this.rays.push({
 				size: 2,
