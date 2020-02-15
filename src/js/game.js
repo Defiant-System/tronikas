@@ -29,8 +29,8 @@ const GAME = {
 
 		// start game
 		this.animationFrame = requestAnimationFrame(this.frame.bind(this));
-		//this.addActor(new Stars);
-		this.addActor(new Nebula);
+		this.addActor(new Stars);
+		//this.addActor(new Nebula);
 		this.addActor(new Board);
 		this.addActor(new Player);
 		//this.addActor(new Bouncer);

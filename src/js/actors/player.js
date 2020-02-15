@@ -180,15 +180,16 @@ class Player {
 			this.max.x = Math.max.apply(null, rX);
 			this.min.y = Math.min.apply(null, rY);
 			this.max.y = Math.max.apply(null, rY);
-		}
 
-		if (this.isCovering) {
-			if (this.UP    && this.move.direction === 3 ||
-				this.RIGHT && this.move.direction === 4 ||
-				this.DOWN  && this.move.direction === 1 ||
-				this.LEFT  && this.move.direction === 2) {
-					this.slide();
-					return;
+			// start fresh history
+			if (this.isOnline) {
+				this.history = [[this.x, this.y]];
+			}
+
+			if (this.move.speed !== 0 && (
+				(this.UP || this.DOWN) && ~[2, 4].indexOf(this.move.direction) ||
+				(this.RIGHT || this.LEFT) && ~[1, 3].indexOf(this.move.direction))) {
+				return this.slide();
 			}
 		}
 
@@ -265,11 +266,6 @@ class Player {
 
 		// save movement direction
 		this.move.direction = direction;
-
-		// start fresh history
-		if (this.isOnline) {
-			this.history = [[this.x, this.y]];
-		}
 	}
 
 	slide() {
