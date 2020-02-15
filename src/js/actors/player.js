@@ -27,9 +27,12 @@ class Player {
 		this.isOnline = true;
 
 		// temp
-		// this.history = [[350,20],[350,50],[250,50],[250,170]];
-		// this.x = 250;
-		// this.y = 170;
+		// this.history = [[350,20],[350,50],[250,50],[250,170],[300,170],[300,130]];
+		// this.x = this.history[this.history.length-1][0];
+		// this.y = this.history[this.history.length-1][1];
+		// this.move.direction = 1;
+		// this.isCovering = true;
+		// this.isOnline = false;
 	}
 
 	destroy() {
@@ -182,10 +185,9 @@ class Player {
 			this.max.y = Math.max.apply(null, rY);
 
 			// start fresh history
-			if (this.isOnline) {
-				this.history = [[this.x, this.y]];
-			}
+			this.history = [[this.x, this.y]];
 
+			// movement logic
 			if (this.move.speed !== 0 && (
 				(this.UP || this.DOWN) && ~[2, 4].indexOf(this.move.direction) ||
 				(this.RIGHT || this.LEFT) && ~[1, 3].indexOf(this.move.direction))) {
@@ -268,6 +270,21 @@ class Player {
 		this.move.direction = direction;
 	}
 
+	checkSelfCrossing() {
+		let poly = this.history,
+			i = 0,
+			il = poly.length-3,
+			line = [[].concat(poly[il+1]), [this.x, this.y]];
+
+		for (; i<il; i++) {
+			let polyLine = [[poly[i][0], poly[i][1]], [poly[i+1][0], poly[i+1][1]]],
+				collision = Polyop.lineIntersect(line, polyLine);
+			if (collision) {
+				return console.log("Game Over", collision);
+			}
+		};
+	}
+
 	slide() {
 		this.move.speed = Math.max(this.move.speed - this.move.acc, this.move.min);
 		
@@ -304,6 +321,9 @@ class Player {
 		// player movement
 		if (this.UP || this.RIGHT || this.DOWN || this.LEFT) this.checkMove();
 		else if (this.move.slide) this.slide();
+		
+		// check if player crosses itself
+		if (this.isCovering) this.checkSelfCrossing();
 
 		if (this.move.speed > 0) {
 			this.trail.push({
