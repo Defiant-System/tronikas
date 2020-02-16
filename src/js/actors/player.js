@@ -5,7 +5,7 @@ class Player {
 		this.GAME = GAME;
 		this.ctx = GAME.ctx;
 
-		this.x = 200;
+		this.x = 60;
 		this.y = 20;
 		this.size = 9;
 		this.ring = 0;
@@ -56,6 +56,14 @@ class Player {
 		// add final point
 		polygon.push(point);
 
+		// reset player
+		this.isCovering = false;
+		this.isOnline = true;
+		this.history = [];
+
+		// delete move direction
+		delete this.move.direction;
+
 		// destroy fuse if ignited
 		if (this.fuse) {
 			// remove fuse from actors stack
@@ -70,23 +78,15 @@ class Player {
 			delete this.fuseTimeout;
 		}
 
-		// reset player
-		this.isCovering = false;
-		this.isOnline = true;
-		this.history = [];
-
-		// delete move direction
-		delete this.move.direction;
-
 		// cover board with new polygon
 		GAME.board.cover(polygon, line);
 	}
 
-	nearestLine(point, available) {
-		let len = available.length,
+	nearestLine(point, polygon) {
+		let len = polygon.length,
 			// get distance to all lines
-			distances = available.map((start, i) => {
-				let end = available[(i+1) % len],
+			distances = polygon.map((start, i) => {
+				let end = polygon[(i+1) % len],
 					line = [start, end],
 					distance = Polyop.pointLineDistance(point, line);
 				return { line, distance };
@@ -330,6 +330,8 @@ class Player {
 		if (this.move.speed <= this.move.min) {
 			this.move.speed = 0;
 			delete this.move.slide;
+
+			if (!this.isCovering) delete this.move.direction;
 
 			// start fuse
 			this.fuseCountdown();

@@ -5,14 +5,31 @@ class Bouncer {
 		this.GAME = GAME;
 		this.ctx = GAME.ctx;
 		this.board = GAME.board;
+		this.player = GAME.player;
 
 		this.radius = 6;
 		this.center = new Vector(100, 100);
-		this.vector = new Vector(3, 3);
+		this.vector = new Vector(3, -3);
 	}
 
 	destroy() {
-		
+		console.log("game over");
+		this.isDestroyed = true;
+
+		GAME.deleteActor(this);
+	}
+
+	checkPlayerLine() {
+		let polygon = [].concat(this.player.history);
+		polygon.push([this.player.x, this.player.y]);
+
+		polygon.slice(0, -1).map((point, i) => {
+			let line = [point, polygon[i+1]],
+				collision = Polyop.circleIntersectLine(this, line);
+			if (collision) {
+				this.destroy();
+			}
+		});
 	}
 
 	update() {
@@ -36,6 +53,10 @@ class Bouncer {
 				this.GAME.addActor(spark);
 			}
 		}
+
+		// check collision with player line
+		this.checkPlayerLine();
+
 		// move item
 		this.center.add(this.vector);
 	}

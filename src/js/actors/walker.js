@@ -2,100 +2,78 @@
 class Walker {
 	constructor() {
 		this.name = "Walker";
+		this.GAME = GAME;
 		this.ctx = GAME.ctx;
+		this.board = GAME.board;
+		this.player = GAME.player;
 		
-		this.x = 220;
-		this.y = 20;
+		this.x = 480;
+		this.y = 150;
 		this.color = "#05f";
-		this.speed = 1.25;
-		this.size = 3;
-		this.direction = 1;
+		this.speed = 1.5;
+		this.size = 5;
+		this.direction = 4;
+
+		// reset boundaries
+		this.min = { x: 260, y: 0 };
+		this.max = { x: 530, y: 0 };
+
+		let polygon = this.board.available;
+		this.currentLine = this.getCurrentLine(polygon);
 	}
 
 	destroy() {
 		
 	}
 
-	random(a, b) {
-		return Math.random() * (b - a) + a;
-	}
-
-	randomInteger(a, b) {
-		return Math.floor(this.random(a, b));
-	}
-
-	nearest(point) {
-		var boardPoly = GAME.board.polygon,
-			poly,
-			line,
-			distance = [];
-
-		// loop through polygons
-		for (let i=0, il=boardPoly.length; i<il; i++) {
-			poly = boardPoly[i].poly;
-			for (let j=0, jl=poly.length; j<jl; j++) {
-				line = [[poly[j][0], poly[j][1]], [poly[(j+1) % jl][0], poly[(j+1) % jl][1]]];
-				// populate array of distances
-				distance.push({
-					line: line,
-					distance: Polyop.pointLineDistance(point, line)
-				});
-			}
-		}
-
-		distance.sort(function(a, b) {
-			return a.distance - b.distance;
+	getCurrentLine(polygon) {
+		let il = polygon.length,
+			pos = [this.x, this.y],
+			lines = [];
+		polygon.map((p1, i) => {
+			let n = (i+1) % il,
+				polyLine = [p1, polygon[n]];
+			if (Polyop.pointLineDistance(pos, polyLine) === 0) lines.push(polyLine);
 		});
-
-		// trim array
-		distance.splice(8, 1e4);
-
-		return distance;
+		if (this.currentLine) {
+			lines = lines.filter(line => line.join() !== this.currentLine.join());
+		}
+		return lines[0];
 	}
 
-	selectPath() {
-		var point = [this.x, this.y],
-			nearest = this.nearest(point),
-			i = 0,
-			il = nearest.length,
-			paths = [],
+	checkDirection() {
+		let polygon = this.board.available,
+			line = this.getCurrentLine(polygon),
 			pi = Math.PI,
-		//	a, b, c,
-			selected,
-			direction,
-			line, normal;
+			normal = (Math.atan(line[1][1] - line[0][1], line[1][0] - line[0][0]) + pi) % pi;
 
-		for (; i<il; i++) {
-			if (nearest[i].distance < this.speed) {
-				line = nearest[i].line;
-				normal = (Math.atan(line[1][1] - line[0][1], line[1][0] - line[0][0]) + pi) % pi;
+		// reset min & max
+		this.min = { x: 0, y: 0 };
+		this.max = { x: 0, y: 0 };
 
-				if (normal === 0) {
-					if ((this.x > line[0][0] || this.x > line[1][0]) && this.direction !== 1) paths.push({normal: normal, line: line, direction: 3});
-					if ((this.x < line[0][0] || this.x < line[1][0]) && this.direction !== 3) paths.push({normal: normal, line: line, direction: 1});
-				} else {
-					if ((this.y > line[0][1] || this.y > line[1][1]) && this.direction !== 2) paths.push({normal: normal, line: line, direction: 4});
-					if ((this.y < line[0][1] || this.y < line[1][1]) && this.direction !== 4) paths.push({normal: normal, line: line, direction: 2});
-				}
-			}
+		if (normal === 0) {
+			this.min.x = Math.min(line[0][0], line[1][0]);
+			this.max.x = Math.max(line[0][0], line[1][0]);
+			this.direction = (this.x <= this.min.x) ? 2 : 4;
+		} else {
+			this.min.y = Math.min(line[0][1], line[1][1]);
+			this.max.y = Math.max(line[0][1], line[1][1]);
+			this.direction = (this.y <= this.min.y) ? 3 : 1;
 		}
-		if (paths.length) {
-			selected = paths[this.randomInteger(0, paths.length)];
-			if (selected.normal === 0) this.y = selected.line[0][1];
-			else this.x = selected.line[0][0];
-			this.direction = selected.direction;
-		}
+		// save current line
+		this.currentLine = line;
 	}
 
 	update() {
-		// selects walker path
-		this.selectPath();
-
 		switch (this.direction) {
-			case 1: this.x += this.speed; break;
-			case 2: this.y += this.speed; break;
-			case 3: this.x -= this.speed; break;
-			case 4: this.y -= this.speed; break;
+			case 1: this.y = Math.max(this.y - this.speed, this.min.y); break;
+			case 2: this.x = Math.min(this.x + this.speed, this.max.x); break;
+			case 3: this.y = Math.min(this.y + this.speed, this.max.y); break;
+			case 4: this.x = Math.max(this.x - this.speed, this.min.x); break;
+		}
+		if (this.x === this.min.x || this.x === this.max.x ||
+			this.y === this.min.y || this.y === this.max.y) {
+			this.checkDirection();
 		}
 	}
 

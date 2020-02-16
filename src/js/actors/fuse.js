@@ -23,6 +23,7 @@ class Fuse {
 	}
 
 	destroy() {
+		console.log('game-over');
 		this.isDestroyed = true;
 
 		GAME.deleteActor(this);
@@ -100,7 +101,6 @@ class Fuse {
 
 		// check if fuse catched up player
 		if (this.x === this.player.x && this.y === this.player.y) {
-			console.log('game-over');
 			this.destroy();
 		} else if (this.x === this.max.x || this.x === this.min.x
 				|| this.y === this.max.y || this.y === this.min.y) {

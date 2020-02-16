@@ -35,7 +35,7 @@ const GAME = {
 		this.addActor(new Board);
 		this.addActor(new Player);
 		//this.addActor(new Bouncer);
-		//this.addActor(new Walker);
+		this.addActor(new Walker);
 		//this.addActor(new Photon);
 		//this.addActor(new Pi);
 		//this.addActor(new Electric);
