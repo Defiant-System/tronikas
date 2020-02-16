@@ -10,6 +10,7 @@ class Bouncer {
 		this.radius = 6;
 		this.center = new Vector(100, 100);
 		this.vector = new Vector(3, -3);
+		this.color = "#fa4";
 	}
 
 	destroy() {
@@ -76,9 +77,9 @@ class Bouncer {
 			this.center.x,
 			this.center.y,
 			0);
-		gradient.addColorStop(0, 'transparent');
-		gradient.addColorStop(0.7, '#fa4');
-		gradient.addColorStop(1, '#fff');
+		gradient.addColorStop(0, "transparent");
+		gradient.addColorStop(0.7, this.color);
+		gradient.addColorStop(1, "#fff");
 
 		ctx.fillStyle = gradient;
 

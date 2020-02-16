@@ -8,12 +8,17 @@ class Walker {
 		this.player = GAME.player;
 		
 		this.radius = 3;
-		this.center = new Vector(380, 20);
+		this.center = new Vector(350, 20);
 		this.color = "#09f";
-		this.speed = 1.5;
+		this.speed = 1.25;
+
+		let sat1 = new Satellite(this),
+			sat2 = new Satellite(this);
+		this.GAME.addActor(sat1);
+		this.GAME.addActor(sat2);
 
 		this.checkDirection();
-		//this.direction = 2;
+		this.direction = 2;
 	}
 
 	destroy() {

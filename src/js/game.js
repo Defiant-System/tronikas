@@ -11,6 +11,7 @@ ant_require("actors/fuse.js");
 ant_require("actors/bouncer.js");
 ant_require("actors/sparkle.js");
 ant_require("actors/walker.js");
+ant_require("actors/satellite.js");
 ant_require("actors/photon.js");
 ant_require("actors/pi.js");
 ant_require("actors/electric.js");
@@ -34,8 +35,8 @@ const GAME = {
 		//this.addActor(new Nebula);
 		this.addActor(new Board);
 		this.addActor(new Player);
-		//this.addActor(new Bouncer);
-		this.addActor(new Walker);
+		this.addActor(new Bouncer);
+		//this.addActor(new Walker);
 		//this.addActor(new Photon);
 		//this.addActor(new Pi);
 		//this.addActor(new Electric);
