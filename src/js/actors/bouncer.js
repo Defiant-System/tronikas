@@ -21,7 +21,7 @@ class Bouncer {
 
 	checkPlayerLine() {
 		let polygon = [].concat(this.player.history);
-		polygon.push([this.player.x, this.player.y]);
+		polygon.push([this.player.center.x, this.player.center.y]);
 
 		polygon.slice(0, -1).map((point, i) => {
 			let line = [point, polygon[i+1]],

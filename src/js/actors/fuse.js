@@ -61,7 +61,7 @@ class Fuse {
 		this.max = { x: 0, y: 0 };
 
 		// add current position of the player
-		polygon.push([this.player.x, this.player.y]);
+		polygon.push([this.player.center.x, this.player.center.y]);
 
 		// calculate normal
 		//pos2 = polygon[Math.min(len + 1, polygon.length - 1)];
@@ -100,7 +100,7 @@ class Fuse {
 		}
 
 		// check if fuse catched up player
-		if (this.x === this.player.x && this.y === this.player.y) {
+		if (this.x === this.player.center.x && this.y === this.player.center.y) {
 			this.destroy();
 		} else if (this.x === this.max.x || this.x === this.min.x
 				|| this.y === this.max.y || this.y === this.min.y) {

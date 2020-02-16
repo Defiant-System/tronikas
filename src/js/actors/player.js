@@ -5,9 +5,8 @@ class Player {
 		this.GAME = GAME;
 		this.ctx = GAME.ctx;
 
-		this.x = 60;
-		this.y = 20;
-		this.size = 9;
+		this.radius = 9;
+		this.center = new Vector(60, 20);
 		this.ring = 0;
 		this.move = {
 			speed: 0,
@@ -34,8 +33,8 @@ class Player {
 
 		// temp
 		// this.history = [[350,20],[350,50],[250,50],[250,170],[300,170],[300,130],[490,130]];
-		// this.x = this.history[this.history.length-1][0];
-		// this.y = this.history[this.history.length-1][1];
+		// this.center.x = this.history[this.history.length-1][0];
+		// this.center.y = this.history[this.history.length-1][1];
 		// this.move.direction = 2;
 		// this.isCovering = true;
 		// this.isOnline = false;
@@ -51,7 +50,7 @@ class Player {
 	closePath() {
 		let line = this.lastPolyLine,
 			polygon = [].concat(this.history),
-			point = [this.x, this.y];
+			point = [this.center.x, this.center.y];
 
 		// add final point
 		polygon.push(point);
@@ -103,7 +102,7 @@ class Player {
 	checkMove() {
 		let available = GAME.board.available,
 			len = available.length,
-			point = [this.x, this.y],
+			point = [this.center.x, this.center.y],
 			pi = Math.PI,
 			direction;
 
@@ -112,15 +111,15 @@ class Player {
 		delete this.fuseTimeout;
 
 		if (this.isCovering) {
-			let line = [[this.x, this.y], [this.x, this.y]],
+			let line = [[this.center.x, this.center.y], [this.center.x, this.center.y]],
 				intersection = [];
 
 			// extend imaginary line & check if path needs closing
 			switch (true) {
 				case this.UP:
 					line[1][1] = -1e4;
-					if (!this.isOnline && this.y <= this.min.y) {
-						this.y = this.min.y;
+					if (!this.isOnline && this.center.y <= this.min.y) {
+						this.center.y = this.min.y;
 						this.isCovering = false;
 						this.closePath();
 						return;
@@ -128,8 +127,8 @@ class Player {
 					break;
 				case this.RIGHT:
 					line[1][0] =  1e4;
-					if (!this.isOnline && this.x >= this.max.x) {
-						this.x = this.max.x;
+					if (!this.isOnline && this.center.x >= this.max.x) {
+						this.center.x = this.max.x;
 						this.isCovering = false;
 						this.closePath();
 						return;
@@ -137,8 +136,8 @@ class Player {
 					break;
 				case this.DOWN:
 					line[1][1] =  1e4;
-					if (!this.isOnline && this.y >= this.max.y) {
-						this.y = this.max.y;
+					if (!this.isOnline && this.center.y >= this.max.y) {
+						this.center.y = this.max.y;
 						this.isCovering = false;
 						this.closePath();
 						return;
@@ -146,8 +145,8 @@ class Player {
 					break;
 				case this.LEFT:
 					line[1][0] = -1e4;
-					if (!this.isOnline && this.x <= this.min.x) {
-						this.x = this.min.x;
+					if (!this.isOnline && this.center.x <= this.min.x) {
+						this.center.x = this.min.x;
 						this.isCovering = false;
 						this.closePath();
 						return;
@@ -212,7 +211,7 @@ class Player {
 			this.max.y = Math.max.apply(null, rY);
 
 			// start fresh history
-			this.history = [[this.x, this.y]];
+			this.history = [[this.center.x, this.center.y]];
 
 			// movement logic
 			if (this.move.speed !== 0 && (
@@ -227,7 +226,7 @@ class Player {
 				direction = 1;
 				if (this.isCovering && this.move.direction !== direction) {
 					// add point
-					this.history.push([this.x, this.y]);
+					this.history.push([this.center.x, this.center.y]);
 				}
 				if (!this.isCovering && this.move.speed === 0 && this.max.y === this.min.y) {
 					// test is move is "legal"
@@ -237,14 +236,14 @@ class Player {
 				if (this.max.y !== this.min.y) {
 					this.move.slide = 1;
 					this.move.speed = Math.min(this.move.speed + this.move.acc, this.move.max);
-					this.y = Math.max(this.y - this.move.speed, this.min.y);
+					this.center.y = Math.max(this.center.y - this.move.speed, this.min.y);
 				}
 				break;
 			case this.RIGHT:
 				direction = 2;
 				if (this.isCovering && this.move.direction !== direction) {
 					// add point
-					this.history.push([this.x, this.y]);
+					this.history.push([this.center.x, this.center.y]);
 				}
 				if (!this.isCovering && this.move.speed === 0 && this.max.x === this.min.x) {
 					// test is move is "legal"
@@ -254,14 +253,14 @@ class Player {
 				if (this.max.x !== this.min.x) {
 					this.move.slide = 2;
 					this.move.speed = Math.min(this.move.speed + this.move.acc, this.move.max);
-					this.x = Math.min(this.x + this.move.speed, this.max.x);
+					this.center.x = Math.min(this.center.x + this.move.speed, this.max.x);
 				}
 				break;
 			case this.DOWN:
 				direction = 3;
 				if (this.isCovering && this.move.direction !== direction) {
 					// add point
-					this.history.push([this.x, this.y]);
+					this.history.push([this.center.x, this.center.y]);
 				}
 				if (!this.isCovering && this.move.speed === 0 && this.max.y === this.min.y) {
 					// test is move is "legal"
@@ -271,14 +270,14 @@ class Player {
 				if (this.max.y !== this.min.y) {
 					this.move.slide = 3;
 					this.move.speed = Math.min(this.move.speed + this.move.acc, this.move.max);
-					this.y = Math.min(this.y + this.move.speed, this.max.y);
+					this.center.y = Math.min(this.center.y + this.move.speed, this.max.y);
 				}
 				break;
 			case this.LEFT:
 				direction = 4;
 				if (this.isCovering && this.move.direction !== direction) {
 					// add point
-					this.history.push([this.x, this.y]);
+					this.history.push([this.center.x, this.center.y]);
 				}
 				if (!this.isCovering && this.move.speed === 0 && this.max.x === this.min.x) {
 					// test is move is "legal"
@@ -288,7 +287,7 @@ class Player {
 				if (this.max.x !== this.min.x) {
 					this.move.slide = 4;
 					this.move.speed = Math.min(this.move.speed + this.move.acc, this.move.max);
-					this.x = Math.max(this.x - this.move.speed, this.min.x);
+					this.center.x = Math.max(this.center.x - this.move.speed, this.min.x);
 				}
 				break;
 		}
@@ -301,7 +300,7 @@ class Player {
 		let poly = this.history,
 			i = 0,
 			il = poly.length-3,
-			line = [[].concat(poly[il+1]), [this.x, this.y]];
+			line = [[].concat(poly[il+1]), [this.center.x, this.center.y]];
 
 		for (; i<il; i++) {
 			let polyLine = [[poly[i][0], poly[i][1]], [poly[i+1][0], poly[i+1][1]]],
@@ -339,20 +338,20 @@ class Player {
 		// deceleration
 		switch (this.move.slide) {
 			case 1: // UP
-				this.y = Math.max(this.y - this.move.speed, this.min.y);
-				if (this.y === this.min.y && this.isCovering) this.closePath();
+				this.center.y = Math.max(this.center.y - this.move.speed, this.min.y);
+				if (this.center.y === this.min.y && this.isCovering) this.closePath();
 				break;
 			case 2: // RIGHT
-				this.x = Math.min(this.x + this.move.speed, this.max.x);
-				if (this.x === this.max.x && this.isCovering) this.closePath();
+				this.center.x = Math.min(this.center.x + this.move.speed, this.max.x);
+				if (this.center.x === this.max.x && this.isCovering) this.closePath();
 				break;
 			case 3: // DOWN
-				this.y = Math.min(this.y + this.move.speed, this.max.y);
-				if (this.y === this.max.y && this.isCovering) this.closePath();
+				this.center.y = Math.min(this.center.y + this.move.speed, this.max.y);
+				if (this.center.y === this.max.y && this.isCovering) this.closePath();
 				break;
 			case 4: // LEFT
-				this.x = Math.max(this.x - this.move.speed, this.min.x);
-				if (this.x === this.min.x && this.isCovering) this.closePath();
+				this.center.x = Math.max(this.center.x - this.move.speed, this.min.x);
+				if (this.center.x === this.min.x && this.isCovering) this.closePath();
 				break;
 		}
 	}
@@ -371,9 +370,9 @@ class Player {
 
 		if (this.move.speed > 0) {
 			this.trail.push({
-				x: this.x,
-				y: this.y,
-				size: this.size / 2,
+				x: this.center.x,
+				y: this.center.y,
+				size: this.radius / 2,
 				ttl: 17,
 			});
 		}
@@ -401,7 +400,7 @@ class Player {
 			ctx.beginPath();
 			ctx.moveTo(shape[0][0], shape[0][1]);
 			shape.slice(1).map(point => ctx.lineTo(point[0], point[1]));
-			ctx.lineTo(this.x, this.y);
+			ctx.lineTo(this.center.x, this.center.y);
 			ctx.stroke();
 		}
 
@@ -421,7 +420,7 @@ class Player {
 		ctx.lineWidth = 3;
 
 		// dot gradient
-		gradient = ctx.createRadialGradient(this.x, this.y, this.size * 1.5, this.x, this.y, 0);
+		gradient = ctx.createRadialGradient(this.center.x, this.center.y, this.radius * 1.5, this.center.x, this.center.y, 0);
 		gradient.addColorStop(0, "transparent");
 		gradient.addColorStop(0.7, "#f8f");
 		gradient.addColorStop(1, "#fff");
@@ -429,14 +428,14 @@ class Player {
 		// player dot
 		ctx.fillStyle = gradient;
 		ctx.beginPath();
-		ctx.arc(this.x, this.y, this.size, 0, pi2);
+		ctx.arc(this.center.x, this.center.y, this.radius, 0, pi2);
 		ctx.fill();
 
 		if (this.move.speed <= this.move.min) {
 			// player ring
 			ctx.beginPath();
 			ctx.strokeStyle = `rgba(255,190,255,${ (10 - this.ring) / 13 })`;
-			ctx.arc(this.x, this.y, this.size + this.ring, 0, pi2);
+			ctx.arc(this.center.x, this.center.y, this.radius + this.ring, 0, pi2);
 			ctx.stroke();
 		}
 

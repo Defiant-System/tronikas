@@ -66,5 +66,31 @@ const Polyop = {
 			if (intersect) inside = !inside;
 		}
 		return inside;
-	}
+	},
+	circlesIntersect(c1, c2) {
+		let x0 = c1.center.x,
+			y0 = c1.center.y,
+			r0 = c1.radius,
+			x1 = c2.center.x,
+			y1 = c2.center.y,
+			r1 = c2.radius,
+        	a, dx, dy, d, h, rx, ry,
+        	x2, y2;
+
+        dx = x1 - x0;
+        dy = y1 - y0;
+        d = Math.sqrt((dy*dy) + (dx*dx));
+        
+        if (d > (r0 + r1)) return;
+        if (d < Math.abs(r0 - r1)) return;
+
+        a = ((r0*r0) - (r1*r1) + (d*d)) / (2.0 * d) ;
+        x2 = x0 + (dx * a/d);
+        y2 = y0 + (dy * a/d);
+        h = Math.sqrt((r0*r0) - (a*a));
+        rx = -dy * (h/d);
+        ry = dx * (h/d);
+
+        return [x2 + rx, x2 - rx, y2 + ry, y2 - ry];
+    }
 }
