@@ -1,21 +1,21 @@
 
-ant_require("misc/vector.js");
-ant_require("misc/simplexNoise.js");
+defiant.require("misc/vector.js");
+defiant.require("misc/simplexNoise.js");
 
-ant_require("actors/stars.js");
-ant_require("actors/nebula.js");
+defiant.require("actors/stars.js");
+defiant.require("actors/nebula.js");
 
-ant_require("actors/board.js");
-ant_require("actors/player.js");
-ant_require("actors/fuse.js");
-ant_require("actors/bouncer.js");
-ant_require("actors/sparkle.js");
-ant_require("actors/walker.js");
-ant_require("actors/satellite.js");
-ant_require("actors/photon.js");
-ant_require("actors/pi.js");
-ant_require("actors/electric.js");
-ant_require("actors/gravity.js");
+defiant.require("actors/board.js");
+defiant.require("actors/player.js");
+defiant.require("actors/fuse.js");
+defiant.require("actors/bouncer.js");
+defiant.require("actors/sparkle.js");
+defiant.require("actors/walker.js");
+defiant.require("actors/satellite.js");
+defiant.require("actors/photon.js");
+defiant.require("actors/pi.js");
+defiant.require("actors/electric.js");
+defiant.require("actors/gravity.js");
 
 
 const GAME = {

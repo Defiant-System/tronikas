@@ -1,6 +1,6 @@
 
-ant_require("game.js");	 // GAME
-ant_require("polyop/index.js");	 // Polyop
+defiant.require("game.js");	 // GAME
+defiant.require("polyop/index.js");	 // Polyop
 
 const tronikas = {
 	init() {
