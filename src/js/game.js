@@ -1,21 +1,21 @@
 
-defiant.require("misc/vector.js");
-defiant.require("misc/simplexNoise.js");
+@import "./misc/vector.js";
+@import "./misc/simplexNoise.js";
 
-defiant.require("actors/stars.js");
-defiant.require("actors/nebula.js");
+@import "./actors/stars.js";
+@import "./actors/nebula.js";
 
-defiant.require("actors/board.js");
-defiant.require("actors/player.js");
-defiant.require("actors/fuse.js");
-defiant.require("actors/bouncer.js");
-defiant.require("actors/sparkle.js");
-defiant.require("actors/walker.js");
-defiant.require("actors/satellite.js");
-defiant.require("actors/photon.js");
-defiant.require("actors/pi.js");
-defiant.require("actors/electric.js");
-defiant.require("actors/gravity.js");
+@import "./actors/board.js";
+@import "./actors/player.js";
+@import "./actors/fuse.js";
+@import "./actors/bouncer.js";
+@import "./actors/sparkle.js";
+@import "./actors/walker.js";
+@import "./actors/satellite.js";
+@import "./actors/photon.js";
+@import "./actors/pi.js";
+@import "./actors/electric.js";
+@import "./actors/gravity.js";
 
 
 const GAME = {

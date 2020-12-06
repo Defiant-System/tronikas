@@ -1,18 +1,18 @@
 
-defiant.require("./utils.js");
-defiant.require("./aetTree.js");
-defiant.require("./bundleState.js");
-defiant.require("./clip.js");
-defiant.require("./edgeTable.js");
-defiant.require("./itNodeTable.js");
-defiant.require("./lineHelper.js");
-defiant.require("./lmtTable.js");
-defiant.require("./operationType.js");
-defiant.require("./polygonNode.js");
-defiant.require("./polySimple.js");
-defiant.require("./polyDefault.js");
-defiant.require("./topPolygonNode.js");
-defiant.require("./scanBeamTree.js");
+@import "./utils.js";
+@import "./aetTree.js";
+@import "./bundleState.js";
+@import "./clip.js";
+@import "./edgeTable.js";
+@import "./itNodeTable.js";
+@import "./lineHelper.js";
+@import "./lmtTable.js";
+@import "./operationType.js";
+@import "./polygonNode.js";
+@import "./polySimple.js";
+@import "./polyDefault.js";
+@import "./topPolygonNode.js";
+@import "./scanBeamTree.js";
 
 
 const Polyop = {
