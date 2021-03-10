@@ -32,6 +32,8 @@ const GAME = {
 		// start game
 		this.animationFrame = requestAnimationFrame(this.frame.bind(this));
 		this.addActor(new Stars);
+	},
+	loadLevel(n) {
 		//this.addActor(new Nebula);
 		this.addActor(new Board);
 		this.addActor(new Player);
