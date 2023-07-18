@@ -84,7 +84,7 @@ const GAME = {
 	update() {
 		this.stack.map(actor => {
 			actor.update(this.DELTA);
-		})
+		});
 	},
 	render() {
 		// stop and freeze
