@@ -2,8 +2,8 @@
 @import "./misc/vector.js";
 @import "./misc/simplexNoise.js";
 
-@import "./actors/stars.js";
-@import "./actors/nebula.js";
+// @imp1ort "./actors/stars.js";
+// @im1port "./actors/nebula.js";
 
 @import "./actors/board.js";
 @import "./actors/player.js";
@@ -17,12 +17,16 @@
 @import "./actors/electric.js";
 @import "./actors/gravity.js";
 
+@import "./modules/bg.js";
+@import "./modules/test.js";
+
+
 
 const GAME = {
 	stack: [],
 	init() {
 		// fast references
-		this.canvas = window.find("#canvas");
+		this.canvas = window.find(".game-cvs");
 		
 		this.cvs = this.canvas[0];
 		this.ctx = this.cvs.getContext("2d");
@@ -31,7 +35,14 @@ const GAME = {
 
 		// start game
 		this.animationFrame = requestAnimationFrame(this.frame.bind(this));
-		this.addActor(new Stars);
+		// this.addActor(new Stars);
+		
+		// init objects
+		Bg.init();
+
+		// DEV-ONLY-START
+		Test.init(this);
+		// DEV-ONLY-END
 	},
 	loadLevel(n) {
 		//this.addActor(new Nebula);

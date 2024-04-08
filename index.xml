@@ -1,7 +1,10 @@
 <Application>
+	<Build>
+		<task action="skip" source="src/js/modules/bg-worker.js" destination="public/js/bg-worker.js"/>
+	</Build>
 	<Head>
 		<meta name="id" value="tronikas"/>
-		<meta name="title" value="Tronikas" version="1.01"/>
+		<meta name="title" value="Tronikas" version="1.02"/>
 		<meta name="author" value="Hakan Bilgin" namespace="ant"/>
 		<meta name="license" value="AGPL-3.0"/>
 		<meta name="repository" value="https://github.com/Defiant-System/tronikas"/>
