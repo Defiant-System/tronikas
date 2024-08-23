@@ -17,6 +17,9 @@ const tronikas = {
 			el;
 		switch (event.type) {
 			// system events
+			case "window.close":
+				Bg.dispatch({ type: "dispose", kill: true });
+				break;
 			case "window.keyup":
 				if (!GAME.player) return;
 				GAME.player.UP =
