@@ -18,13 +18,13 @@ class Vector {
 	add(vector) {
 		this.x += vector.x;
 		this.y += vector.y;
-        return this;
+		return this;
 	}
 
 	sub(vector) {
 		this.x -= vector.x;
 		this.y -= vector.y;
-        return this;
+		return this;
 	}
 
 	multiply(vector) {
@@ -35,7 +35,7 @@ class Vector {
 			this.x *= vector.x;
 			this.y *= vector.y;
 		}
-        return this;
+		return this;
 	}
 
 	divide(vector) {
@@ -46,25 +46,25 @@ class Vector {
 			this.x /= vector.x;
 			this.y /= vector.y;
 		}
-        return this;
+		return this;
 	}
 
 	scale(s) {
 		this.x *= s;
 		this.y *= s;
-        return this;
+		return this;
 	}
 
-    angle() {
-        return Math.atan2(this.y, this.x);
-    }
+	angle() {
+		return Math.atan2(this.y, this.x);
+	}
 
 	normalize() {
 		var m = this.magnitude();
 		if (m > 0) {
 			this.divide(m);
 		}
-        return this;
+		return this;
 	}
 
 	magnitude() {
